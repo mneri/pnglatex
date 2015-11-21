@@ -14,11 +14,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 BACKGROUND=Transparent
-FNAME=`date +%s%N`
+FNAME=`date +%s%N`.png
 DISPLAY=\$
 PACKAGES=
+SIZE=11
 
-while getopts b:df:o:p: ARG; do
+while getopts b:df:o:p:s: ARG; do
     case $ARG in
 	b)
 	    BACKGROUND=$OPTARG
@@ -40,18 +41,33 @@ while getopts b:df:o:p: ARG; do
 		PACKAGES=$PACKAGES\\usepackage{$P}
 	    done
 	    ;;
+	s)
+	    SIZE=$OPTARG
     esac
 done
 
 if [ ! "$FORMULA" ]; then
     echo "No input formula."
     exit 0
-fi;
+fi
 
-PREFIX="\documentclass[10pt]{article}$PACKAGES\pagestyle{empty}\begin{document}$DISPLAY"
+BNAME=${FNAME##*/}
+TMPDIR=/tmp/me/mneri/pnglatex
+
+if [ ! -d $TMPDIR ]; then
+    mkdir -p $TMPDIR
+fi
+
+PREFIX="\documentclass[${SIZE}pt]{article}$PACKAGES\pagestyle{empty}\begin{document}$DISPLAY"
 SUFFIX="$DISPLAY\end{document}"
 
-echo $PREFIX$FORMULA$SUFFIX > $FNAME.tex
-latex -halt-on-error $FNAME.tex > /dev/null
-dvipng -bg $BACKGROUND -o $FNAME.png -q -T tight -z 9 $FNAME.dvi > /dev/null
-rm $FNAME.aux $FNAME.dvi $FNAME.log $FNAME.tex
+echo $PREFIX$FORMULA$SUFFIX > $TMPDIR/$BNAME.tex
+latex -halt-on-error -output-directory=$TMPDIR $TMPDIR/$BNAME.tex > /dev/null
+
+if [ $? -ne 0 ]; then
+    sed -n '/^!/,/^ /p' < $TMPDIR/$BNAME.log
+    exit 1
+fi
+
+dvipng -bg $BACKGROUND -o $FNAME -q -T tight -z 9 $TMPDIR/$BNAME.dvi > /dev/null
+rm $TMPDIR/$BNAME.aux $TMPDIR/$BNAME.dvi $TMPDIR/$BNAME.log $TMPDIR/$BNAME.tex > /dev/null
