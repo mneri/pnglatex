@@ -13,13 +13,45 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-FNAME=`echo $RANDOM | md5sum`
-FNAME=${FNAME:0:32}
-PREFIX='\documentclass[10pt]{article}\pagestyle{empty}\begin{document}$'
-FORMULA=$1
-SUFFIX='$\end{document}'
+BACKGROUND=Transparent
+FNAME=`date +%s%N`
+DISPLAY=\$
+PACKAGES=
 
-echo $PREFIX $FORMULA $SUFFIX > $FNAME.tex
-latex -halt-on-error $FNAME.tex
-dvipng -bg Transparent -o $FNAME.png -q -T tight -z 9 $FNAME.dvi
+while getopts b:df:o:p: ARG; do
+    case $ARG in
+	b)
+	    BACKGROUND=$OPTARG
+	    ;;
+	d)
+	    DISPLAY=\$\$
+	    ;;
+	f)
+	    FORMULA=$OPTARG
+	    ;;
+	o)
+	    FNAME=$OPTARG
+	    ;;
+	p)
+	    IFS=":"
+	    PLIST=($OPTARG)
+	    
+	    for P in $PLIST; do
+		PACKAGES=$PACKAGES\\usepackage{$P}
+	    done
+	    ;;
+    esac
+done
+
+if [ ! "$FORMULA" ]; then
+    echo "No input formula."
+    exit 0
+fi;
+
+PREFIX="\documentclass[10pt]{article}$PACKAGES\pagestyle{empty}\begin{document}$DISPLAY"
+SUFFIX="$DISPLAY\end{document}"
+
+echo $PREFIX$FORMULA$SUFFIX > $FNAME.tex
+latex -halt-on-error $FNAME.tex > /dev/null
+dvipng -bg $BACKGROUND -o $FNAME.png -q -T tight -z 9 $FNAME.dvi > /dev/null
 rm $FNAME.aux $FNAME.dvi $FNAME.log $FNAME.tex
