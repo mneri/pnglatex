@@ -62,10 +62,9 @@ PREFIX="\documentclass[${SIZE}pt]{article}$PACKAGES\pagestyle{empty}\begin{docum
 SUFFIX="$DISPLAY\end{document}"
 
 echo $PREFIX$FORMULA$SUFFIX > $TMPDIR/$BNAME.tex
-latex -halt-on-error -output-directory=$TMPDIR $TMPDIR/$BNAME.tex > /dev/null
+latex -halt-on-error -output-directory=$TMPDIR $TMPDIR/$BNAME.tex | sed -n '/^!/,/^ /p'
 
-if [ $? -ne 0 ]; then
-    sed -n '/^!/,/^ /p' < $TMPDIR/$BNAME.log
+if [ ${PIPESTATUS[0]} -ne 0 ]; then
     exit 1
 fi
 
