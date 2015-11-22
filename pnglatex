@@ -65,6 +65,7 @@ echo $PREFIX$FORMULA$SUFFIX > $TMPDIR/$BNAME.tex
 latex -halt-on-error -output-directory=$TMPDIR $TMPDIR/$BNAME.tex | sed -n '/^!/,/^ /p'
 
 if [ ${PIPESTATUS[0]} -ne 0 ]; then
+    rm $TMPDIR/$BNAME.aux $TMPDIR/$BNAME.dvi $TMPDIR/$BNAME.log $TMPDIR/$BNAME.tex > /dev/null
     exit 1
 fi
 
