@@ -14,60 +14,131 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 BACKGROUND=White
-FNAME=`date +%s%N`.png
+FNAME=$HOME/`date +%s%N`.png
+FOREGROUND=Black
+FORMULA=
 DISPLAY=\$
+DPI=96
+HELP=0
+OPTIMIZE=0
 PACKAGES=
 SIZE=11
+declare -r VERSION=0.2
 
-while getopts b:df:o:p:s: ARG; do
-    case $ARG in
-	b)
-	    BACKGROUND=$OPTARG
-	    ;;
-	d)
-	    DISPLAY=\$\$
-	    ;;
-	f)
-	    FORMULA=$OPTARG
-	    ;;
-	o)
-	    FNAME=$OPTARG
-	    ;;
-	p)
-	    IFS=":"
-	    PLIST=($OPTARG)
-	    
-	    for P in $PLIST; do
-		PACKAGES=$PACKAGES\\usepackage{$P}
-	    done
-	    ;;
-	s)
-	    SIZE=$OPTARG
-    esac
-done
+function clean {
+    rm -fr $TMPDIR/$BNAME.aux $TMPDIR/$BNAME.dvi $TMPDIR/$BNAME.log $TMPDIR/$BNAME.tex
+}
 
-if [ ! "$FORMULA" ]; then
-    echo "No input formula."
-    exit 0
-fi
+function main {
+    parse "$@"
 
-BNAME=${FNAME##*/}
-TMPDIR=/tmp/me/mneri/pnglatex
+    if [ $HELP -eq 1 ]; then
+	usage
+	exit 0
+    fi
 
-if [ ! -d $TMPDIR ]; then
-    mkdir -p $TMPDIR
-fi
+    if [ ! "$FORMULA" ]; then
+	echo "No input formula." >&2
+	exit 1
+    fi
 
-PREFIX="\documentclass[${SIZE}pt]{article}$PACKAGES\pagestyle{empty}\begin{document}$DISPLAY"
-SUFFIX="$DISPLAY\end{document}"
+    BNAME=${FNAME##*/}
+    TMPDIR=/tmp/me/mneri/pnglatex
 
-echo $PREFIX$FORMULA$SUFFIX > $TMPDIR/$BNAME.tex
-latex -halt-on-error -output-directory=$TMPDIR $TMPDIR/$BNAME.tex | sed -n '/^!/,/^ /p'
+    if [ ! -d $TMPDIR ]; then
+	mkdir -p $TMPDIR
+    fi
 
-if [ ${PIPESTATUS[0]} -ne 0 ]; then
-    rm $TMPDIR/$BNAME.aux $TMPDIR/$BNAME.dvi $TMPDIR/$BNAME.log $TMPDIR/$BNAME.tex > /dev/null
-    exit 1
-fi
+    PREFIX="\documentclass[${SIZE}pt]{article}$PACKAGES\pagestyle{empty}\begin{document}$DISPLAY"
+    SUFFIX="$DISPLAY\end{document}"
 
-dvipng -bg $BACKGROUND -o $FNAME -q -T tight -z 9 $TMPDIR/$BNAME.dvi > /dev/null
-rm $TMPDIR/$BNAME.aux $TMPDIR/$BNAME.dvi $TMPDIR/$BNAME.log $TMPDIR/$BNAME.tex > /dev/null
+    echo $PREFIX$FORMULA$SUFFIX > $TMPDIR/$BNAME.tex
+    latex -halt-on-error -output-directory=$TMPDIR $TMPDIR/$BNAME.tex | sed -n '/^!/,/^ /p'
+
+    if [ ${PIPESTATUS[0]} -ne 0 ]; then
+	clean
+	exit 1
+    fi
+
+    dvipng -bg $BACKGROUND -D $DPI -fg $FOREGROUND -o $FNAME -q --strict -T tight $TMPDIR/$BNAME.dvi > /dev/null
+
+    if [ $OPTIMIZE -eq 1 ]; then
+	optimize
+    fi
+
+    clean
+}
+
+function optimize {
+    if optipng -v > /dev/null 2>&1; then
+	optipng -zc1-9 -zm1-9 -zs0-3 -f0-5 $FNAME > /dev/null
+    else
+	echo "Optimization requires optipng." >&2
+	exit 1
+    fi
+}
+
+function parse {
+    while getopts b:dD:f:F:ho:Op:s: ARG; do
+	case $ARG in
+	    b)
+		BACKGROUND=$OPTARG
+		;;
+	    d)
+		DISPLAY=\$\$
+		;;
+	    D)
+		DPI=$OPTARG
+		;;
+            f)
+		FORMULA=$OPTARG
+		;;
+	    F)
+		FOREGROUND=$OPTARG
+		;;
+            h)
+		HELP=1
+		;;
+	    o)
+		FNAME=$OPTARG
+		;;
+	    O)
+		OPTIMIZE=1
+		;;
+	    p)
+		IFS=":"
+		PLIST=($OPTARG)
+		
+		for P in $PLIST; do
+		    PACKAGES=$PACKAGES\\usepackage{$P}
+		done
+		;;
+	    s)
+		SIZE=$OPTARG
+	esac
+    done
+}
+
+function usage {
+    echo "pnglatex" $VERSION "- Write LaTeX formulas into PNG files."
+    echo "Copyright 2015-2016 Massimo Neri <hello@mneri.me>"
+    echo
+    echo "List of options:"
+    echo "  -b <color>    Set the background color."
+    echo "  -d            Use displaymath environment."
+    echo "  -D <dpi>      Set the output resolution to the specified dpi."
+    echo "  -f <formula>  Mandatory, the LaTeX formula."
+    echo "  -F <color>    Set the foreground color."
+    echo "  -h            Print this help message."
+    echo "  -o <file>     Specify the output file name."
+    echo "  -O            Optimize the image."
+    echo "  -p <packages> A colon separated list of LaTeX package names."
+    echo "  -s <size>     Set the font size."
+    echo
+    echo "Examples:"
+    echo "  pnglatex -o ~/gauss.png -f \"\sum_{i=0}^n i=\frac{n(n+1)}{2}\""
+    echo "  pnglatex -b Transparent -o ~/eqbydef.png -p amssymb:amsmath -s 12 -f \"A\triangleq B\""
+}
+
+trap "clean" SIGINT SIGTERM
+main "$@"
