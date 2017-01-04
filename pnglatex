@@ -16,6 +16,7 @@
 BACKGROUND=White
 FNAME=$HOME/`date +%s%N`.png
 FOREGROUND=Black
+HEADER=
 FORMULA=
 DISPLAY=\$
 DPI=96
@@ -49,7 +50,7 @@ function main {
 	mkdir -p $TMPDIR
     fi
 
-    PREFIX="\documentclass[${SIZE}pt]{article}$PACKAGES\pagestyle{empty}\begin{document}$DISPLAY"
+    PREFIX="\documentclass[${SIZE}pt]{article}$PACKAGES\pagestyle{empty}$HEADER\begin{document}$DISPLAY"
     SUFFIX="$DISPLAY\end{document}"
 
     echo $PREFIX$FORMULA$SUFFIX > $TMPDIR/$BNAME.tex
@@ -79,7 +80,7 @@ function optimize {
 }
 
 function parse {
-    while getopts b:dD:f:F:ho:Op:s: ARG; do
+    while getopts b:dD:H:f:F:ho:Op:s: ARG; do
 	case $ARG in
 	    b)
 		BACKGROUND=$OPTARG
@@ -89,6 +90,9 @@ function parse {
 		;;
 	    D)
 		DPI=$OPTARG
+    ;;
+      H)
+    HEADER=\\input\{$OPTARG\}
 		;;
             f)
 		FORMULA=$OPTARG
@@ -129,6 +133,7 @@ function usage {
     echo "  -D <dpi>      Set the output resolution to the specified dpi."
     echo "  -f <formula>  Mandatory, the LaTeX formula."
     echo "  -F <color>    Set the foreground color."
+    echo "  -H <header>   Input file in header."
     echo "  -h            Print this help message."
     echo "  -o <file>     Specify the output file name."
     echo "  -O            Optimize the image."
