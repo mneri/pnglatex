@@ -125,7 +125,7 @@ function parse {
 
 function usage {
     echo "pnglatex" $VERSION "- Write LaTeX formulas into PNG files."
-    echo "Copyright 2015-2016 Massimo Neri <hello@mneri.me>"
+    echo "Copyright 2015-2017 Massimo Neri <hello@mneri.me>"
     echo
     echo "List of options:"
     echo "  -b <color>    Set the background color."
