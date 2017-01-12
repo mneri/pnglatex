@@ -23,6 +23,7 @@ HEADER=
 HELP=0
 OPTIMIZE=0
 PACKAGES=
+PADDING=
 SIZE=11
 declare -r VERSION=0.2
 
@@ -63,6 +64,10 @@ function main {
 
     dvipng -bg $BACKGROUND -D $DPI -fg $FOREGROUND -o $FNAME -q --strict -T tight $TMPDIR/$BNAME.dvi > /dev/null
 
+    if [ ! "$PADDING" ]; then
+        pad
+    fi
+
     if [ $OPTIMIZE -eq 1 ]; then
         optimize
     fi
@@ -74,13 +79,22 @@ function optimize {
     if optipng -v > /dev/null 2>&1; then
         optipng -zc1-9 -zm1-9 -zs0-3 -f0-5 $FNAME > /dev/null
     else
-        echo "Optimization requires optipng." >&2
+        echo "Optimization requires optipng package." >&2
+        exit 1
+    fi
+}
+
+function pad {
+    if convert -version > /dev/null 2>&1; then
+        convert $FNAME -bordercolor $BACKGROUND -border $PADDING $FNAME
+    else
+        echo "Padding requires imagemagick package." >&2
         exit 1
     fi
 }
 
 function parse {
-    while getopts b:dD:f:F:hH:o:Op:s: ARG; do
+    while getopts b:dD:f:F:hH:o:Op:P:s: ARG; do
         case $ARG in
             b)
                 BACKGROUND=$OPTARG
@@ -120,6 +134,9 @@ function parse {
 
                 IFS=$OIFS
                 ;;
+            P)
+                PADDING=$OPTARG
+                ;;
             s)
                 SIZE=$OPTARG
         esac
@@ -141,11 +158,12 @@ function usage {
     echo "  -o <file>     Specify the output file name."
     echo "  -O            Optimize the image."
     echo "  -p <packages> A colon separated list of LaTeX package names."
+    echo "  -P <padding>  Set the padding."
     echo "  -s <size>     Set the font size."
     echo
     echo "Examples:"
     echo "  pnglatex -o ~/gauss.png -f \"\sum_{i=0}^n i=\frac{n(n+1)}{2}\""
-    echo "  pnglatex -b Transparent -o ~/eqbydef.png -p amssymb:amsmath -s 12 -f \"A\triangleq B\""
+    echo "  pnglatex -b Transparent -o def.png -p amssymb:amsmath -P 10x2 -s 12 -f \"A\triangleq B\""
 }
 
 trap "clean" SIGINT SIGTERM
