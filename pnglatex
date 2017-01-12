@@ -110,12 +110,15 @@ function parse {
                 OPTIMIZE=1
                 ;;
             p)
+                OIFS=$IFS
                 IFS=":"
                 PLIST=($OPTARG)
                 
                 for P in $PLIST; do
                     PACKAGES=$PACKAGES\\usepackage{$P}
                 done
+
+                IFS=$OIFS
                 ;;
             s)
                 SIZE=$OPTARG
