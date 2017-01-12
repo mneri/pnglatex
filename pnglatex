@@ -64,7 +64,7 @@ function main {
 
     dvipng -bg $BACKGROUND -D $DPI -fg $FOREGROUND -o $FNAME -q --strict -T tight $TMPDIR/$BNAME.dvi > /dev/null
 
-    if [ ! "$PADDING" ]; then
+    if [ "$PADDING" ]; then
         pad
     fi
 
