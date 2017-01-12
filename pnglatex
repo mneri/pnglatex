@@ -34,20 +34,20 @@ function main {
     parse "$@"
 
     if [ $HELP -eq 1 ]; then
-	usage
-	exit 0
+        usage
+        exit 0
     fi
 
     if [ ! "$FORMULA" ]; then
-	echo "No input formula." >&2
-	exit 1
+        echo "No input formula." >&2
+        exit 1
     fi
 
     BNAME=${FNAME##*/}
     TMPDIR=/tmp/me/mneri/pnglatex
 
     if [ ! -d $TMPDIR ]; then
-	mkdir -p $TMPDIR
+        mkdir -p $TMPDIR
     fi
 
     PREFIX="\documentclass[${SIZE}pt]{article}$PACKAGES\pagestyle{empty}$HEADER\begin{document}$DISPLAY"
@@ -57,14 +57,14 @@ function main {
     latex -halt-on-error -output-directory=$TMPDIR $TMPDIR/$BNAME.tex | sed -n '/^!/,/^ /p'
 
     if [ ${PIPESTATUS[0]} -ne 0 ]; then
-	clean
-	exit 1
+        clean
+        exit 1
     fi
 
     dvipng -bg $BACKGROUND -D $DPI -fg $FOREGROUND -o $FNAME -q --strict -T tight $TMPDIR/$BNAME.dvi > /dev/null
 
     if [ $OPTIMIZE -eq 1 ]; then
-	optimize
+        optimize
     fi
 
     clean
@@ -72,54 +72,54 @@ function main {
 
 function optimize {
     if optipng -v > /dev/null 2>&1; then
-	optipng -zc1-9 -zm1-9 -zs0-3 -f0-5 $FNAME > /dev/null
+        optipng -zc1-9 -zm1-9 -zs0-3 -f0-5 $FNAME > /dev/null
     else
-	echo "Optimization requires optipng." >&2
-	exit 1
+        echo "Optimization requires optipng." >&2
+        exit 1
     fi
 }
 
 function parse {
     while getopts b:dD:f:F:hH:o:Op:s: ARG; do
-	case $ARG in
-	    b)
-		BACKGROUND=$OPTARG
-		;;
-	    d)
-		DISPLAY=\$\$
-		;;
-	    D)
-		DPI=$OPTARG
+        case $ARG in
+            b)
+                BACKGROUND=$OPTARG
+                ;;
+            d)
+                DISPLAY=\$\$
+                ;;
+            D)
+                DPI=$OPTARG
                 ;;
             f)
-		FORMULA=$OPTARG
-		;;
-	    F)
-		FOREGROUND=$OPTARG
-		;;
+                FORMULA=$OPTARG
+                ;;
+            F)
+                FOREGROUND=$OPTARG
+                ;;
             h)
-		HELP=1
-		;;
+                HELP=1
+                ;;
             H)
                 HEADER=\\input\{$OPTARG\}
-		;;
-	    o)
-		FNAME=$OPTARG
-		;;
-	    O)
-		OPTIMIZE=1
-		;;
-	    p)
-		IFS=":"
-		PLIST=($OPTARG)
-		
-		for P in $PLIST; do
-		    PACKAGES=$PACKAGES\\usepackage{$P}
-		done
-		;;
-	    s)
-		SIZE=$OPTARG
-	esac
+                ;;
+            o)
+                FNAME=$OPTARG
+                ;;
+            O)
+                OPTIMIZE=1
+                ;;
+            p)
+                IFS=":"
+                PLIST=($OPTARG)
+                
+                for P in $PLIST; do
+                    PACKAGES=$PACKAGES\\usepackage{$P}
+                done
+                ;;
+            s)
+                SIZE=$OPTARG
+        esac
     done
 }
 
