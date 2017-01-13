@@ -27,8 +27,9 @@ OPTIMIZE=0
 PACKAGES=
 PADDING=
 SHOWVERSION=0
+SILENT=0
 SIZE=11
-declare -r VERSION=0.4
+declare -r VERSION=0.5
 
 function box {
     if [ ! convert -version > /dev/null 2>&1 ]; then
@@ -103,6 +104,10 @@ function main {
         optimize
     fi
 
+    if [ $SILENT -eq 0 ]; then
+        realpath $FNAME
+    fi
+
     clean
 }
 
@@ -116,7 +121,7 @@ function optimize {
 }
 
 function parse {
-    while getopts b:B:dD:f:F:hH:m:o:Op:P:s:v ARG; do
+    while getopts b:B:dD:f:F:hH:m:o:Op:P:s:Sv ARG; do
         case $ARG in
             b)
                 BACKGROUND=$OPTARG
@@ -178,6 +183,9 @@ function parse {
             s)
                 SIZE=$OPTARG
                 ;;
+            S)
+                SILENT=1
+                ;;
             v)
                 SHOWVERSION=1
         esac
@@ -203,6 +211,7 @@ function usage {
     echo "  -p <packages> A colon separated list of LaTeX package names."
     echo "  -P <padding>  Set the padding."
     echo "  -s <size>     Set the font size."
+    echo "  -S            Don't print image file name."
     echo "  -v            Show version."
     echo
     echo "Examples:"
