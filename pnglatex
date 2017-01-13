@@ -118,7 +118,7 @@ function main {
 
 function optimize {
     if optipng -v > /dev/null 2>&1; then
-        optipng -zc1-9 -zm1-9 -zs0-3 -f0-5 $PNGFILE > /dev/null
+        optipng -zc1-9 -zm1-9 -zs0-3 -f0-5 -quiet $PNGFILE
     else
         echo "Optimization requires optipng package." >&2
         exit 1
