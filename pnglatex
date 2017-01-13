@@ -14,6 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 BACKGROUND=White
+BORDER=
 FNAME=$HOME/`date +%s%N`.png
 FOREGROUND=Black
 FORMULA=
@@ -21,12 +22,32 @@ DISPLAY=\$
 DPI=96
 HEADER=
 HELP=0
+MARGIN=
 OPTIMIZE=0
 PACKAGES=
 PADDING=
 SHOWVERSION=0
 SIZE=11
-declare -r VERSION=0.3
+declare -r VERSION=0.4
+
+function box {
+    if [ ! convert -version > /dev/null 2>&1 ]; then
+        echo "Paddings, borders and margins require imagemagick package."
+        exit 1
+    fi
+
+    if [ "$PADDING" ]; then
+        convert $FNAME -bordercolor $BACKGROUND -border $PADDING $FNAME
+    fi
+
+    if [ "$BORDER" ]; then
+        convert $FNAME -bordercolor $BORDER -border 1 $FNAME
+    fi
+
+    if [ "$MARGIN" ]; then
+        convert $FNAME -bordercolor $BACKGROUND -border $MARGIN $FNAME
+    fi
+}
 
 function clean {
     rm -fr $TMPDIR/$BNAME.aux $TMPDIR/$BNAME.dvi $TMPDIR/$BNAME.log $TMPDIR/$BNAME.tex
@@ -70,8 +91,8 @@ function main {
 
     dvipng -bg $BACKGROUND -D $DPI -fg $FOREGROUND -o $FNAME -q --strict -T tight $TMPDIR/$BNAME.dvi > /dev/null
 
-    if [ "$PADDING" ]; then
-        pad
+    if [ "$PADDING" ] || [ "$BORDER" ] || [ "$MARGIN" ]; then
+        box
     fi
 
     if [ $OPTIMIZE -eq 1 ]; then
@@ -90,20 +111,14 @@ function optimize {
     fi
 }
 
-function pad {
-    if convert -version > /dev/null 2>&1; then
-        convert $FNAME -bordercolor $BACKGROUND -border $PADDING $FNAME
-    else
-        echo "Padding requires imagemagick package." >&2
-        exit 1
-    fi
-}
-
 function parse {
-    while getopts b:dD:f:F:hH:o:Op:P:s:v ARG; do
+    while getopts b:B:dD:f:F:hH:m:o:Op:P:s:v ARG; do
         case $ARG in
             b)
                 BACKGROUND=$OPTARG
+                ;;
+            B)
+                BORDER=$OPTARG
                 ;;
             d)
                 DISPLAY=\$\$
@@ -122,6 +137,14 @@ function parse {
                 ;;
             H)
                 HEADER=\\input\{$OPTARG\}
+                ;;
+            m)
+                MARGIN=$OPTARG
+
+                if [ ! $(echo $MARGIN | egrep '^[0-9]+(x[0-9]+)?$') ]; then
+                    echo "Invalid padding." >&2
+                    exit 1
+                fi
                 ;;
             o)
                 FNAME=$OPTARG
@@ -163,12 +186,14 @@ function usage {
     echo
     echo "List of options:"
     echo "  -b <color>    Set the background color."
+    echo "  -B <color>    Set the border color."
     echo "  -d            Use displaymath environment."
     echo "  -D <dpi>      Set the output resolution to the specified dpi."
     echo "  -f <formula>  Mandatory, the LaTeX formula."
     echo "  -F <color>    Set the foreground color."
     echo "  -h            Print this help message."
     echo "  -H <header>   Input file in header."
+    echo "  -m <margin>   Set the margin."
     echo "  -o <file>     Specify the output file name."
     echo "  -O            Optimize the image."
     echo "  -p <packages> A colon separated list of LaTeX package names."
