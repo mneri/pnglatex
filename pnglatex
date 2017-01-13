@@ -61,7 +61,7 @@ function main {
     SUFFIX="$DISPLAY\end{document}"
 
     echo $PREFIX$FORMULA$SUFFIX > $TMPDIR/$BNAME.tex
-    latex -halt-on-error -output-directory=$TMPDIR $TMPDIR/$BNAME.tex | sed -n '/^!/,/^ /p'
+    latex -halt-on-error -interaction=nonstopmode -output-directory=$TMPDIR $TMPDIR/$BNAME.tex | sed -n '/^!/,/^ /p'
 
     if [ ${PIPESTATUS[0]} -ne 0 ]; then
         clean
