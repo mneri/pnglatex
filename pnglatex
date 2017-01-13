@@ -15,7 +15,7 @@
 
 BACKGROUND=White
 BORDER=
-FNAME=$HOME/`date +%s%N`.png
+FNAME=
 FOREGROUND=Black
 FORMULA=
 DISPLAY=\$
@@ -69,6 +69,10 @@ function main {
     if [ ! "$FORMULA" ]; then
         echo "No input formula." >&2
         exit 1
+    fi
+
+    if [ ! "$FNAME" ]; then
+        FNAME=$(tempfile -d $PWD -p "for" -s ".png")
     fi
 
     BNAME=${FNAME##*/}
