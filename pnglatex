@@ -58,7 +58,10 @@ function clean {
 
 function main {
     local BNAME
-    
+    local PREFIX
+    local TMPDIR
+    local SUFFIX
+
     parse "$@"
 
     if [ $HELP -eq 1 ]; then
@@ -198,7 +201,7 @@ function parse {
 }
 
 function usage {
-    echo "pnglatex" $VERSION "- Write LaTeX formulas into PNG files."
+    echo "pnglatex $VERSION - Write LaTeX formulas into PNG files."
     echo "Copyright 2015-2017 Massimo Neri <hello@mneri.me>"
     echo
     echo "List of options:"
