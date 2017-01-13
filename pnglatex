@@ -15,7 +15,6 @@
 
 BACKGROUND=White
 BORDER=
-FNAME=
 FOREGROUND=Black
 FORMULA=
 DISPLAY=\$
@@ -26,9 +25,11 @@ MARGIN=
 OPTIMIZE=0
 PACKAGES=
 PADDING=
+PNGFILE=
 SHOWVERSION=0
 SILENT=0
 SIZE=11
+TEXFILE=
 declare -r VERSION=0.5
 
 function box {
@@ -38,23 +39,26 @@ function box {
     fi
 
     if [ "$PADDING" ]; then
-        convert $FNAME -bordercolor $BACKGROUND -border $PADDING $FNAME
+        convert $PNGFILE -bordercolor $BACKGROUND -border $PADDING $PNGFILE
     fi
 
     if [ "$BORDER" ]; then
-        convert $FNAME -bordercolor $BORDER -border 1 $FNAME
+        convert $PNGFILE -bordercolor $BORDER -border 1 $PNGFILE
     fi
 
     if [ "$MARGIN" ]; then
-        convert $FNAME -bordercolor $BACKGROUND -border $MARGIN $FNAME
+        convert $PNGFILE -bordercolor $BACKGROUND -border $MARGIN $PNGFILE
     fi
 }
 
 function clean {
-    rm -fr $TMPDIR/$BNAME.aux $TMPDIR/$BNAME.dvi $TMPDIR/$BNAME.log $TMPDIR/$BNAME.tex
+    local BNAME=${TEXFILE%.tex}
+    rm -fr $TEXFILE $BNAME.aux $BNAME.dvi $BNAME.log
 }
 
 function main {
+    local BNAME
+    
     parse "$@"
 
     if [ $HELP -eq 1 ]; then
@@ -72,29 +76,30 @@ function main {
         exit 1
     fi
 
-    if [ ! "$FNAME" ]; then
-        FNAME=$(tempfile -d $PWD -p "for" -s ".png")
-    fi
-
-    BNAME=${FNAME##*/}
     TMPDIR=/tmp/me/mneri/pnglatex
 
     if [ ! -d $TMPDIR ]; then
         mkdir -p $TMPDIR
     fi
 
+    TEXFILE=$(tempfile -d $TMPDIR -p f -s .tex)
     PREFIX="\documentclass[${SIZE}pt]{article}$PACKAGES\pagestyle{empty}$HEADER\begin{document}$DISPLAY"
     SUFFIX="$DISPLAY\end{document}"
 
-    echo $PREFIX$FORMULA$SUFFIX > $TMPDIR/$BNAME.tex
-    latex -halt-on-error -interaction=nonstopmode -output-directory=$TMPDIR $TMPDIR/$BNAME.tex | sed -n '/^!/,/^ /p'
+    echo $PREFIX$FORMULA$SUFFIX > $TEXFILE
+    latex -halt-on-error -interaction=nonstopmode -output-directory=$TMPDIR $TEXFILE | sed -n '/^!/,/^ /p'
 
     if [ ${PIPESTATUS[0]} -ne 0 ]; then
         clean
         exit 1
     fi
 
-    dvipng -bg $BACKGROUND -D $DPI -fg $FOREGROUND -o $FNAME -q --strict -T tight $TMPDIR/$BNAME.dvi > /dev/null
+    if [ ! "$PNGFILE" ]; then
+        BNAME=$(basename $TEXFILE)
+        PNGFILE=$PWD/${BNAME%.tex}.png
+    fi
+
+    dvipng -bg $BACKGROUND -D $DPI -fg $FOREGROUND -o $PNGFILE -q --strict -T tight ${TEXFILE%.tex}.dvi > /dev/null
 
     if [ "$PADDING" ] || [ "$BORDER" ] || [ "$MARGIN" ]; then
         box
@@ -105,7 +110,7 @@ function main {
     fi
 
     if [ $SILENT -eq 0 ]; then
-        realpath $FNAME
+        realpath $PNGFILE
     fi
 
     clean
@@ -113,7 +118,7 @@ function main {
 
 function optimize {
     if optipng -v > /dev/null 2>&1; then
-        optipng -zc1-9 -zm1-9 -zs0-3 -f0-5 $FNAME > /dev/null
+        optipng -zc1-9 -zm1-9 -zs0-3 -f0-5 $PNGFILE > /dev/null
     else
         echo "Optimization requires optipng package." >&2
         exit 1
@@ -156,7 +161,7 @@ function parse {
                 fi
                 ;;
             o)
-                FNAME=$OPTARG
+                PNGFILE=$OPTARG
                 ;;
             O)
                 OPTIMIZE=1
