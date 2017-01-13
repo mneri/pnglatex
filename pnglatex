@@ -24,8 +24,9 @@ HELP=0
 OPTIMIZE=0
 PACKAGES=
 PADDING=
+SHOWVERSION=0
 SIZE=11
-declare -r VERSION=0.2
+declare -r VERSION=0.3
 
 function clean {
     rm -fr $TMPDIR/$BNAME.aux $TMPDIR/$BNAME.dvi $TMPDIR/$BNAME.log $TMPDIR/$BNAME.tex
@@ -36,6 +37,11 @@ function main {
 
     if [ $HELP -eq 1 ]; then
         usage
+        exit 0
+    fi
+
+    if [ $SHOWVERSION -eq 1 ]; then
+        version
         exit 0
     fi
 
@@ -94,7 +100,7 @@ function pad {
 }
 
 function parse {
-    while getopts b:dD:f:F:hH:o:Op:P:s: ARG; do
+    while getopts b:dD:f:F:hH:o:Op:P:s:v ARG; do
         case $ARG in
             b)
                 BACKGROUND=$OPTARG
@@ -144,6 +150,9 @@ function parse {
                 ;;
             s)
                 SIZE=$OPTARG
+                ;;
+            v)
+                SHOWVERSION=1
         esac
     done
 }
@@ -165,10 +174,15 @@ function usage {
     echo "  -p <packages> A colon separated list of LaTeX package names."
     echo "  -P <padding>  Set the padding."
     echo "  -s <size>     Set the font size."
+    echo "  -v            Show version."
     echo
     echo "Examples:"
     echo "  pnglatex -o ~/gauss.png -f \"\sum_{i=0}^n i=\frac{n(n+1)}{2}\""
     echo "  pnglatex -b Transparent -o def.png -p amssymb:amsmath -P 10x2 -s 12 -f \"A\triangleq B\""
+}
+
+function version {
+    echo $VERSION
 }
 
 trap "clean" SIGINT SIGTERM
