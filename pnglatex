@@ -56,6 +56,14 @@ function clean {
     rm -fr $TEXFILE $BNAME.aux $BNAME.dvi $BNAME.log
 }
 
+function issize {
+    if [ $(echo $1 | egrep '^[0-9]+(x[0-9]+)?$') ]; then
+        echo 0
+    else
+        echo 1
+    fi
+}
+
 function main {
     local BNAME
     local PREFIX
@@ -198,14 +206,6 @@ function parse {
                 SHOWVERSION=1
         esac
     done
-}
-
-function issize {
-    if [ $(echo $1 | egrep '^[0-9]+(x[0-9]+)?$') ]; then
-        echo 0
-    else
-        echo 1
-    fi
 }
 
 function usage {
