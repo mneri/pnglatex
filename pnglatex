@@ -121,7 +121,7 @@ function main {
     fi
 
     if [ $SILENT -eq 0 ]; then
-        realpath $PNGFILE
+        readlink -f $PNGFILE
     fi
 
     clean
