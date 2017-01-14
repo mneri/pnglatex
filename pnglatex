@@ -39,29 +39,21 @@ function box {
     fi
 
     if [ "$PADDING" ]; then
-        convert $PNGFILE -bordercolor $BACKGROUND -border $PADDING $PNGFILE
+        convert $PNGFILE -bordercolor $BACKGROUND -border $(scale $PADDING) $PNGFILE
     fi
 
     if [ "$BORDER" ]; then
-        convert $PNGFILE -bordercolor $BORDER -border 1 $PNGFILE
+        convert $PNGFILE -bordercolor $BORDER -border $(scale 1) $PNGFILE
     fi
 
     if [ "$MARGIN" ]; then
-        convert $PNGFILE -bordercolor $BACKGROUND -border $MARGIN $PNGFILE
+        convert $PNGFILE -bordercolor $BACKGROUND -border $(scale $MARGIN) $PNGFILE
     fi
 }
 
 function clean {
     local BNAME=${TEXFILE%.tex}
     rm -fr $TEXFILE $BNAME.aux $BNAME.dvi $BNAME.log
-}
-
-function issize {
-    if [ $(echo $1 | egrep '^[0-9]+(x[0-9]+)?$') ]; then
-        echo 0
-    else
-        echo 1
-    fi
 }
 
 function main {
@@ -166,7 +158,7 @@ function parse {
             m)
                 MARGIN=$OPTARG
 
-                if [ $(issize $MARGIN) -ne 0 ]; then
+                if [ ! $(echo $MARGIN | egrep '^[0-9]+(x[0-9]+)?$') ]; then
                     echo "Invalid margin." >&2
                     exit 1
                 fi
@@ -191,7 +183,7 @@ function parse {
             P)
                 PADDING=$OPTARG
 
-                if [ $(issize $PADDING) -ne 0 ]; then
+                if [ ! $(echo $PADDING | egrep '^[0-9]+(x[0-9]+)?$') ]; then
                     echo "Invalid padding." >&2
                     exit 1
                 fi
@@ -206,6 +198,14 @@ function parse {
                 SHOWVERSION=1
         esac
     done
+}
+
+function scale {
+    local BASEDPI=96
+    local WIDTH=$(($(echo $1 | sed -r 's/x.*//') * $DPI / $BASEDPI))
+    local HEIGHT=$(($(echo $1 | sed -r 's/.*x//') * $DPI / $BASEDPI))
+
+    echo ${WIDTH}x${HEIGHT}
 }
 
 function usage {
