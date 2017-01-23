@@ -15,10 +15,10 @@
 
 BACKGROUND=White
 BORDER=
+DPI=96
+ENVIRONMENT=\$
 FOREGROUND=Black
 FORMULA=
-ENVIRONMENT=\$
-DPI=96
 HEADER=
 HELP=0
 MARGIN=
@@ -30,7 +30,7 @@ SHOWVERSION=0
 SILENT=0
 SIZE=11
 TEXFILE=
-declare -r VERSION=0.5
+declare -r VERSION=0.6
 
 function box {
     if [ ! convert -version > /dev/null 2>&1 ]; then
@@ -242,8 +242,9 @@ function usage {
     echo "  -v               Show version."
     echo
     echo "Examples:"
-    echo "  pnglatex -o gauss.png -f \"\sum_{i=0}^n i=\frac{n(n+1)}{2}\""
+    echo "  pnglatex -f \"\sum_{i=0}^n i=\frac{n(n+1)}{2}\""
     echo "  pnglatex -b Transparent -o def.png -p amssymb:amsmath -P 10x2 -s 12 -f \"A\triangleq B\""
+    echo "  pnglatex -e displaymath -f \"n!=n(n-1)!\""
 }
 
 function version {
