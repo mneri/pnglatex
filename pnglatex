@@ -17,7 +17,7 @@ BACKGROUND=White
 BORDER=
 FOREGROUND=Black
 FORMULA=
-DISPLAY=\$
+ENVIRONMENT=\$
 DPI=96
 HEADER=
 HELP=0
@@ -58,6 +58,8 @@ function clean {
 
 function main {
     local BNAME
+    local BEGINENV
+    local ENDENV
     local PREFIX
     local TMPDIR
     local SUFFIX
@@ -86,8 +88,17 @@ function main {
     fi
 
     TEXFILE=$(tempfile -d $TMPDIR -p f -s .tex)
-    PREFIX="\documentclass[${SIZE}pt]{article}$PACKAGES\pagestyle{empty}$HEADER\begin{document}$DISPLAY"
-    SUFFIX="$DISPLAY\end{document}"
+
+    if [ "$ENVIRONMENT" = '$' ] || [ "$ENVIRONMENT" = '$$' ]; then
+        BEGINENV=$ENVIRONMENT
+        ENDENV=$ENVIRONMENT
+    else
+        BEGINENV="\begin{$ENVIRONMENT}"
+        ENDENV="\end{$ENVIRONMENT}"
+    fi
+    
+    PREFIX="\documentclass[${SIZE}pt]{article}$PACKAGES\pagestyle{empty}$HEADER\begin{document}$BEGINENV"
+    SUFFIX="$ENDENV\end{document}"
 
     echo $PREFIX$FORMULA$SUFFIX > $TEXFILE
     latex -halt-on-error -interaction=nonstopmode -output-directory=$TMPDIR $TEXFILE | sed -n '/^!/,/^ /p'
@@ -129,7 +140,7 @@ function optimize {
 }
 
 function parse {
-    while getopts b:B:dD:f:F:hH:m:o:Op:P:s:Sv ARG; do
+    while getopts b:B:d:e:f:F:hH:m:o:Op:P:s:Sv ARG; do
         case $ARG in
             b)
                 BACKGROUND=$OPTARG
@@ -138,10 +149,10 @@ function parse {
                 BORDER=$OPTARG
                 ;;
             d)
-                DISPLAY=\$\$
-                ;;
-            D)
                 DPI=$OPTARG
+                ;;
+            e)
+                ENVIRONMENT=$OPTARG
                 ;;
             f)
                 FORMULA=$OPTARG
@@ -213,25 +224,25 @@ function usage {
     echo "Copyright 2015-2017 Massimo Neri <hello@mneri.me>"
     echo
     echo "List of options:"
-    echo "  -b <color>    Set the background color."
-    echo "  -B <color>    Set the border color."
-    echo "  -d            Use displaymath environment."
-    echo "  -D <dpi>      Set the output resolution to the specified dpi."
-    echo "  -f <formula>  Mandatory, the LaTeX formula."
-    echo "  -F <color>    Set the foreground color."
-    echo "  -h            Print this help message."
-    echo "  -H <header>   Input file in header."
-    echo "  -m <margin>   Set the margin."
-    echo "  -o <file>     Specify the output file name."
-    echo "  -O            Optimize the image."
-    echo "  -p <packages> A colon separated list of LaTeX package names."
-    echo "  -P <padding>  Set the padding."
-    echo "  -s <size>     Set the font size."
-    echo "  -S            Don't print image file name."
-    echo "  -v            Show version."
+    echo "  -b <color>       Set the background color."
+    echo "  -B <color>       Set the border color."
+    echo "  -d <dpi>         Set the output resolution to the specified dpi."
+    echo "  -e <environment> Set the environment."
+    echo "  -f <formula>     Mandatory, the LaTeX formula."
+    echo "  -F <color>       Set the foreground color."
+    echo "  -h               Print this help message."
+    echo "  -H <header>      Input file in header."
+    echo "  -m <margin>      Set the margin."
+    echo "  -o <file>        Specify the output file name."
+    echo "  -O               Optimize the image."
+    echo "  -p <packages>    A colon separated list of LaTeX package names."
+    echo "  -P <padding>     Set the padding."
+    echo "  -s <size>        Set the font size."
+    echo "  -S               Don't print image file name."
+    echo "  -v               Show version."
     echo
     echo "Examples:"
-    echo "  pnglatex -o ~/gauss.png -f \"\sum_{i=0}^n i=\frac{n(n+1)}{2}\""
+    echo "  pnglatex -o gauss.png -f \"\sum_{i=0}^n i=\frac{n(n+1)}{2}\""
     echo "  pnglatex -b Transparent -o def.png -p amssymb:amsmath -P 10x2 -s 12 -f \"A\triangleq B\""
 }
 
