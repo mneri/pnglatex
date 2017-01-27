@@ -1,6 +1,9 @@
-pnglatex
-======
+# pnglatex
+`pnglatex` is a small script that turns LaTeX formulas into png images. It's as simple as:
 
-A small shell script that outputs LaTeX formulas into png files. It's as simple as
+    ./pnglatex -f "E=mc^2"
 
-    ./pnglatex -f "\sum_{i=0}^{n}i=\frac{n(n+1)}{2}"
+## Installation
+Download or clone the repository and make it executable, using
+
+    chmod +x pnglatex
