@@ -53,7 +53,7 @@ function box {
 
 function clean {
     local BNAME=${TEXFILE%.tex}
-    rm -fr $TEXFILE $BNAME.aux $BNAME.dvi $BNAME.log
+    rm -f $TEXFILE $BNAME.aux $BNAME.dvi $BNAME.log
 }
 
 function main {
