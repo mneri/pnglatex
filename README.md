@@ -23,6 +23,7 @@ Download or clone the repository and make it executable, using
 + `-O` Optimize the image
 + `-p <packages>` A colon separated list of LaTeX package names
 + `-P <padding>` Set the padding
++ `-r <file>` Read an image and print the LaTeX formula
 + `-s <size>` Set the font size
 + `-S` Don't print image file name
 + `-v` Show version

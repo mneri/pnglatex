@@ -31,7 +31,7 @@ SHOWVERSION=0
 SILENT=0
 SIZE=11
 TEXFILE=
-declare -r VERSION=0.6
+declare -r VERSION=0.7
 
 function box {
     if convert -version &> /dev/null; then
@@ -47,7 +47,7 @@ function box {
             convert $PNGFILE -bordercolor $BACKGROUND -border $(scale $MARGIN) $PNGFILE
         fi
     else
-        echo "Paddings, borders and margins require imagemagick package."
+        echo "Paddings, borders and margins require imagemagick package." >&2
         exit 1
     fi
 }
@@ -57,25 +57,13 @@ function clean {
     rm -f $TEXFILE $BNAME.aux $BNAME.dvi $BNAME.log
 }
 
-function main {
+function generate {
     local BNAME
     local BEGINENV
     local ENDENV
     local PREFIX
     local TMPDIR
     local SUFFIX
-
-    parse "$@"
-
-    if [ $HELP -eq 1 ]; then
-        usage
-        exit 0
-    fi
-
-    if [ $SHOWVERSION -eq 1 ]; then
-        version
-        exit 0
-    fi
 
     if [ ! "$FORMULA" ]; then
         while read -r LINE; do
@@ -136,9 +124,29 @@ function main {
     clean
 }
 
+function main {
+    parse "$@"
+
+    if [ $HELP -eq 1 ]; then
+        usage
+        exit 0
+    fi
+
+    if [ $SHOWVERSION -eq 1 ]; then
+        version
+        exit 0
+    fi
+
+    if [ "$REVERSE" ]; then
+        reverse
+    else
+        generate
+    fi
+}
+
 function meta {
     if convert -version &> /dev/null; then
-        convert -set latex:formula "$FORMULA" -set generator "pnglatex $VERSION" $PNGFILE $PNGFILE
+        convert -set latex:formula "${FORMULA//\\/\\\\}" -set generator "pnglatex $VERSION" $PNGFILE $PNGFILE
     fi
 }
 
@@ -152,7 +160,7 @@ function optimize {
 }
 
 function parse {
-    while getopts b:B:d:e:f:F:hH:m:Mo:Op:P:s:Sv ARG; do
+    while getopts b:B:d:e:f:F:hH:m:Mo:Op:P:r:s:Sv ARG; do
         case $ARG in
             b)
                 BACKGROUND=$OPTARG
@@ -214,6 +222,9 @@ function parse {
                     exit 1
                 fi
                 ;;
+            r)
+                REVERSE=$OPTARG
+                ;;
             s)
                 SIZE=$OPTARG
                 ;;
@@ -224,6 +235,20 @@ function parse {
                 SHOWVERSION=1
         esac
     done
+}
+
+function reverse {
+    if identify -version &> /dev/null; then
+        if [ ! -e "$REVERSE" ] || [ ! -r "$REVERSE" ]; then
+            echo "Can't open file." >&2
+            exit 1;
+        fi
+
+        echo $(identify -verbose $REVERSE | grep 'latex:formula:' | sed 's/latex:formula://')
+    else
+        echo "Getting formula from image requires imagemagick package." >&2
+        exit 1
+    fi
 }
 
 function scale {
@@ -253,6 +278,7 @@ function usage {
     echo "  -O               Optimize the image."
     echo "  -p <packages>    A colon separated list of LaTeX package names."
     echo "  -P <padding>     Set the padding."
+    echo "  -r <file>        Read an image and print the LaTeX formula."
     echo "  -s <size>        Set the font size."
     echo "  -S               Don't print image file name."
     echo "  -v               Show version."
