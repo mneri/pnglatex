@@ -13,9 +13,9 @@ Download or clone the repository and make it executable, using
 + `-B <color>` Set the border color
 + `-d <dpi>` Set the output resolution to the specified dpi
 + `-e <environment>` Set the environment for the formula (i.e. `displaymath` or `eqnarray`)
-+ `-f <formula>` Mandatory, the LaTeX formula
++ `-f <formula>` The LaTeX formula
 + `-F <color>` Set the foreground color
-+ `-h` Print the help message.
++ `-h` Print the help message
 + `-H <header>` Input file in header
 + `-m <margin>` Set the margin
 + `-o <file>` Specify the output file name

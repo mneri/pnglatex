@@ -77,8 +77,9 @@ function main {
     fi
 
     if [ ! "$FORMULA" ]; then
-        echo "No input formula." >&2
-        exit 1
+        while read -r LINE; do
+            FORMULA="$FORMULA $LINE"
+        done
     fi
 
     TMPDIR=/tmp/me/mneri/pnglatex
@@ -228,7 +229,7 @@ function usage {
     echo "  -B <color>       Set the border color."
     echo "  -d <dpi>         Set the output resolution to the specified dpi."
     echo "  -e <environment> Set the environment."
-    echo "  -f <formula>     Mandatory, the LaTeX formula."
+    echo "  -f <formula>     The LaTeX formula."
     echo "  -F <color>       Set the foreground color."
     echo "  -h               Print this help message."
     echo "  -H <header>      Input file in header."
