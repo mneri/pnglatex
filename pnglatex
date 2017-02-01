@@ -22,6 +22,7 @@ FORMULA=
 HEADER=
 HELP=0
 MARGIN=
+META=1
 OPTIMIZE=0
 PACKAGES=
 PADDING=
@@ -33,21 +34,21 @@ TEXFILE=
 declare -r VERSION=0.6
 
 function box {
-    if [ ! convert -version > /dev/null 2>&1 ]; then
+    if convert -version &> /dev/null; then
+        if [ "$PADDING" ]; then
+            convert $PNGFILE -bordercolor $BACKGROUND -border $(scale $PADDING) $PNGFILE
+        fi
+
+        if [ "$BORDER" ]; then
+            convert $PNGFILE -bordercolor $BORDER -border $(scale 1) $PNGFILE
+        fi
+
+        if [ "$MARGIN" ]; then
+            convert $PNGFILE -bordercolor $BACKGROUND -border $(scale $MARGIN) $PNGFILE
+        fi
+    else
         echo "Paddings, borders and margins require imagemagick package."
         exit 1
-    fi
-
-    if [ "$PADDING" ]; then
-        convert $PNGFILE -bordercolor $BACKGROUND -border $(scale $PADDING) $PNGFILE
-    fi
-
-    if [ "$BORDER" ]; then
-        convert $PNGFILE -bordercolor $BORDER -border $(scale 1) $PNGFILE
-    fi
-
-    if [ "$MARGIN" ]; then
-        convert $PNGFILE -bordercolor $BACKGROUND -border $(scale $MARGIN) $PNGFILE
     fi
 }
 
@@ -124,6 +125,10 @@ function main {
         optimize
     fi
 
+    if [ $META -eq 1 ]; then
+        meta
+    fi
+
     if [ $SILENT -eq 0 ]; then
         readlink -f $PNGFILE
     fi
@@ -131,8 +136,14 @@ function main {
     clean
 }
 
+function meta {
+    if convert -version &> /dev/null; then
+        convert -set latex:formula "$FORMULA" -set generator "pnglatex $VERSION" $PNGFILE $PNGFILE
+    fi
+}
+
 function optimize {
-    if optipng -v > /dev/null 2>&1; then
+    if optipng -v &> /dev/null; then
         optipng -zc1-9 -zm1-9 -zs0-3 -f0-5 -quiet $PNGFILE
     else
         echo "Optimization requires optipng package." >&2
@@ -141,7 +152,7 @@ function optimize {
 }
 
 function parse {
-    while getopts b:B:d:e:f:F:hH:m:o:Op:P:s:Sv ARG; do
+    while getopts b:B:d:e:f:F:hH:m:Mo:Op:P:s:Sv ARG; do
         case $ARG in
             b)
                 BACKGROUND=$OPTARG
@@ -174,6 +185,9 @@ function parse {
                     echo "Invalid margin." >&2
                     exit 1
                 fi
+                ;;
+            M)
+                META=0
                 ;;
             o)
                 PNGFILE=$OPTARG
@@ -234,6 +248,7 @@ function usage {
     echo "  -h               Print this help message."
     echo "  -H <header>      Input file in header."
     echo "  -m <margin>      Set the margin."
+    echo "  -M               Strip meta information."
     echo "  -o <file>        Specify the output file name."
     echo "  -O               Optimize the image."
     echo "  -p <packages>    A colon separated list of LaTeX package names."
