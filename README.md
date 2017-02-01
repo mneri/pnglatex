@@ -18,6 +18,7 @@ Download or clone the repository and make it executable, using
 + `-h` Print the help message
 + `-H <header>` Input file in header
 + `-m <margin>` Set the margin
++ `-M` Strip meta information
 + `-o <file>` Specify the output file name
 + `-O` Optimize the image
 + `-p <packages>` A colon separated list of LaTeX package names
