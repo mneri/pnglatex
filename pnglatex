@@ -233,6 +233,9 @@ function parse {
                 ;;
             v)
                 SHOWVERSION=1
+                ;;
+            ?)
+                exit 1
         esac
     done
 }
