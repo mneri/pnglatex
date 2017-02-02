@@ -62,11 +62,15 @@ function generate {
     local BEGINENV
     local ENDENV
     local PREFIX
+    local MESSAGE
     local TMPDIR
     local SUFFIX
 
     if [ ! "$FORMULA" ]; then
-        while read -r LINE; do
+        MESSAGE="Interactive mode (<Ctrl-D> to end): "
+
+        while read -p "$MESSAGE" -r LINE; do
+            MESSAGE=
             FORMULA="$FORMULA $LINE"
         done
     fi
