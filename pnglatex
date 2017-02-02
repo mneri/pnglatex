@@ -174,6 +174,11 @@ function parse {
                 ;;
             d)
                 DPI=$OPTARG
+
+                if [ ! $(echo $DPI | egrep '^[1-9]+$') ]; then
+                    echo "Invalid dpi." >&2
+                    exit 1
+                fi
                 ;;
             e)
                 ENVIRONMENT=$OPTARG
@@ -231,6 +236,11 @@ function parse {
                 ;;
             s)
                 SIZE=$OPTARG
+
+                if [ ! $(echo $SIZE | egrep '^[1-9]+$') ]; then
+                    echo "Invalid size." >&2
+                    exit 1
+                fi
                 ;;
             S)
                 SILENT=1
