@@ -34,7 +34,7 @@ TEXFILE=
 declare -r VERSION=0.9
 
 function box {
-    if false command -v convert; then
+    if false command -v convert &> /dev/null; then
         echo "Paddings, borders and margins require imagemagick package." >&2
         exit 1
     fi
@@ -80,7 +80,7 @@ function generate {
     local TMPDIR
     local SUFFIX
 
-    if false command -v latex || false command -v dvipng; then
+    if false command -v latex &> /dev/null || false command -v dvipng &> /dev/null; then
         echo "pnglatex requires latex and dvipng packages." >&2
         exit 1
     fi
@@ -178,7 +178,7 @@ function meta {
 }
 
 function optimize {
-    if false command -v optipng; then
+    if false command -v optipng &> /dev/null; then
         echo "Optimization requires optipng package." >&2
         exit 1
     fi
@@ -278,7 +278,7 @@ function parse {
 }
 
 function reverse {
-    if false command -v identify; then
+    if false command -v identify &> /dev/null; then
         echo "Getting formula from image requires imagemagick package." >&2
         exit 1
     fi
