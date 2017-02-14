@@ -31,7 +31,7 @@ SHOWVERSION=0
 SILENT=0
 SIZE=11
 TEXFILE=
-declare -r VERSION=0.8
+declare -r VERSION=0.9
 
 function box {
     if false command -v convert; then
