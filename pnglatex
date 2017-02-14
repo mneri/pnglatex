@@ -100,7 +100,7 @@ function generate {
     SUFFIX="$ENDENV\end{document}"
 
     echo "$PREFIX $FORMULA $SUFFIX" > $TEXFILE
-    latex -halt-on-error -interaction=nonstopmode -output-directory=$TMPDIR $TEXFILE | sed -n '/^!/,/^ /p'
+    latex -halt-on-error -interaction=nonstopmode -output-directory=$TMPDIR $TEXFILE | sed -n '/^!/,/^ /p' >&2
 
     if [ ${PIPESTATUS[0]} -ne 0 ]; then
         clean
