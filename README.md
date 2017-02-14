@@ -3,7 +3,7 @@
 
     $ pnglatex -f "E=mc^2"
 
-If the image was created using `pnglatex`, you can reverse the process.
+If the image was created using `pnglatex` you can also reverse the process.
 
     $ pnglatex -r formula.png
     E=mc^2
