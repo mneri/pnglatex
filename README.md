@@ -1,7 +1,12 @@
 # pnglatex
 `pnglatex` is a small script that turns LaTeX formulas into png images. It's as simple as:
 
-    pnglatex -f "E=mc^2"
+    $ pnglatex -f "E=mc^2"
+
+If the image was created using `pnglatex`, you can revert the process.
+
+    $ pnglatex -r formula.png
+    E=mc^2
 
 ## Installation
 Download or clone the repository, then type
