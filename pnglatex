@@ -165,7 +165,7 @@ function optimize {
         exit 1
     fi
 
-    optipng -zc1-9 -zm1-9 -zs0-3 -f0-5 -quiet $PNGFILE
+    optipng -f0-5 -quiet -zc1-9 -zm1-9 -zs0-3 $PNGFILE
 }
 
 function parse {
