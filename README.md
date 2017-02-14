@@ -4,7 +4,7 @@
     pnglatex -f "E=mc^2"
 
 ## Installation
-Download or clone the repository and make it executable, using
+Download or clone the repository, then type
 
     # chmod +x pnglatex
     # cp pnglatex /usr/bin/pnglatex 
