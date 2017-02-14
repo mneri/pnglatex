@@ -58,11 +58,17 @@ function clean {
 }
 
 function dpi {
-    if command -v xdpyinfo; then
-        xdpyinfo | grep resolution | sed -r 's/^[^0-9]+([0-9]+)x.*$/\1/'
-    else
-        echo 96
+    local VALUE
+
+    if command -v xdpyinfo &> /dev/null; then
+        VALUE=$(xdpyinfo 2> /dev/null | grep resolution | sed -r 's/^[^0-9]+([0-9]+)x.*$/\1/')
     fi
+
+    if [ ! "$VALUE" ]; then
+        VALUE=96
+    fi
+
+    echo $VALUE
 }
 
 function generate {
