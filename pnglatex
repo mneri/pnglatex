@@ -15,7 +15,7 @@
 
 BACKGROUND=White
 BORDER=
-DPI=96
+DPI=
 ENVIRONMENT=\$
 FOREGROUND=Black
 FORMULA=
@@ -55,6 +55,14 @@ function box {
 function clean {
     local BNAME=${TEXFILE%.tex}
     rm -f $TEXFILE $BNAME.aux $BNAME.dvi $BNAME.log
+}
+
+function dpi {
+    if command -v xdpyinfo; then
+        xdpyinfo | grep resolution | sed -r 's/^[^0-9]+([0-9]+)x.*$/\1/'
+    else
+        echo 96
+    fi
 }
 
 function generate {
@@ -110,6 +118,10 @@ function generate {
     if [ ! "$PNGFILE" ]; then
         BNAME=$(basename $TEXFILE)
         PNGFILE=$PWD/${BNAME%.tex}.png
+    fi
+
+    if [ ! "$DPI" ]; then
+        DPI=$(dpi)
     fi
 
     dvipng -bg $BACKGROUND -D $DPI -fg $FOREGROUND -o $PNGFILE -q --strict -T tight ${TEXFILE%.tex}.dvi > /dev/null
