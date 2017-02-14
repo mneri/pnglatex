@@ -7,7 +7,10 @@
 Download or clone the repository, then type
 
     # chmod +x pnglatex
-    # cp pnglatex /usr/bin/pnglatex 
+    # cp pnglatex /usr/bin/pnglatex
+
+## Dependencies
+`pnglatex` depends on `dvipng`, `imagemagick`, `latex` and `optipng` packages.
 
 ## Options
 + `-b <color>` Set the background color
