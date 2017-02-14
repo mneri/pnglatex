@@ -95,7 +95,7 @@ function generate {
         BEGINENV="\begin{$ENVIRONMENT}"
         ENDENV="\end{$ENVIRONMENT}"
     fi
-    
+
     PREFIX="\documentclass[${SIZE}pt]{article}$PACKAGES\pagestyle{empty}$HEADER\begin{document}$BEGINENV"
     SUFFIX="$ENDENV\end{document}"
 
@@ -221,7 +221,7 @@ function parse {
                 OIFS=$IFS
                 IFS=":"
                 PLIST=($OPTARG)
-                
+
                 for P in $PLIST; do
                     PACKAGES=$PACKAGES\\usepackage{$P}
                 done
