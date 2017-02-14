@@ -34,21 +34,21 @@ TEXFILE=
 declare -r VERSION=0.8
 
 function box {
-    if convert -version &> /dev/null; then
-        if [ "$PADDING" ]; then
-            convert $PNGFILE -bordercolor $BACKGROUND -border $(scale $PADDING) $PNGFILE
-        fi
-
-        if [ "$BORDER" ]; then
-            convert $PNGFILE -bordercolor $BORDER -border $(scale 1) $PNGFILE
-        fi
-
-        if [ "$MARGIN" ]; then
-            convert $PNGFILE -bordercolor $BACKGROUND -border $(scale $MARGIN) $PNGFILE
-        fi
-    else
+    if false command -v convert; then
         echo "Paddings, borders and margins require imagemagick package." >&2
         exit 1
+    fi
+
+    if [ "$PADDING" ]; then
+        convert $PNGFILE -bordercolor $BACKGROUND -border $(scale $PADDING) $PNGFILE
+    fi
+
+    if [ "$BORDER" ]; then
+        convert $PNGFILE -bordercolor $BORDER -border $(scale 1) $PNGFILE
+    fi
+
+    if [ "$MARGIN" ]; then
+        convert $PNGFILE -bordercolor $BACKGROUND -border $(scale $MARGIN) $PNGFILE
     fi
 }
 
@@ -65,6 +65,11 @@ function generate {
     local MESSAGE
     local TMPDIR
     local SUFFIX
+
+    if false command -v latex || false command -v dvipng; then
+        echo "pnglatex requires latex and dvipng packages." >&2
+        exit 1
+    fi
 
     if [ ! "$FORMULA" ]; then
         MESSAGE="Interactive mode (<Ctrl-D> to end): "
@@ -149,18 +154,18 @@ function main {
 }
 
 function meta {
-    if convert -version &> /dev/null; then
+    if command -v convert &> /dev/null; then
         convert -set latex:formula "${FORMULA//\\/\\\\}" -set generator "pnglatex $VERSION" $PNGFILE $PNGFILE
     fi
 }
 
 function optimize {
-    if optipng -v &> /dev/null; then
-        optipng -zc1-9 -zm1-9 -zs0-3 -f0-5 -quiet $PNGFILE
-    else
+    if false command -v optipng; then
         echo "Optimization requires optipng package." >&2
         exit 1
     fi
+
+    optipng -zc1-9 -zm1-9 -zs0-3 -f0-5 -quiet $PNGFILE
 }
 
 function parse {
@@ -255,17 +260,17 @@ function parse {
 }
 
 function reverse {
-    if identify -version &> /dev/null; then
-        if [ ! -e "$REVERSE" ] || [ ! -r "$REVERSE" ]; then
-            echo "Can't open file." >&2
-            exit 1
-        fi
-
-        echo $(identify -verbose "$REVERSE" | grep 'latex:formula:' | sed 's/latex:formula://')
-    else
+    if false command -v identify; then
         echo "Getting formula from image requires imagemagick package." >&2
         exit 1
     fi
+
+    if [ ! -e "$REVERSE" ] || [ ! -r "$REVERSE" ]; then
+        echo "Can't open file." >&2
+        exit 1
+    fi
+
+    echo $(identify -verbose "$REVERSE" | grep 'latex:formula:' | sed 's/latex:formula://')
 }
 
 function scale {
