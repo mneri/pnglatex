@@ -292,7 +292,7 @@ function reverse {
 }
 
 function scale {
-    local BASEDPI=96
+    local BASEDPI=$(dpi)
     local WIDTH=$(($(echo $1 | sed -r 's/x.*//') * $DPI / $BASEDPI))
     local HEIGHT=$(($(echo $1 | sed -r 's/.*x//') * $DPI / $BASEDPI))
 
