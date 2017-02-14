@@ -275,6 +275,11 @@ function parse {
                 exit 1
         esac
     done
+
+    if [ "$FORMULA" ] && [ "$REVERSE" ]; then
+        echo "Incompatible options: use either -f or -r, not both." >&2
+        exit 1
+    fi
 }
 
 function reverse {
