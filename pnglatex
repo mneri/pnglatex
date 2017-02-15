@@ -34,11 +34,6 @@ TEXFILE=
 declare -r VERSION=0.10
 
 function box {
-    if ! exists convert; then
-        echo "Paddings, borders and margins require imagemagick package." >&2
-        exit 1
-    fi
-
     if [ "$PADDING" ]; then
         convert $PNGFILE -bordercolor $BACKGROUND -border $(scale $PADDING) $PNGFILE
     fi
@@ -84,11 +79,6 @@ function generate {
     local MESSAGE
     local TMPDIR
     local SUFFIX
-
-    if ! exists latex || ! exists dvipng; then
-        echo "pnglatex requires latex and dvipng packages." >&2
-        exit 1
-    fi
 
     if [ ! "$FORMULA" ]; then
         MESSAGE="Interactive mode (<Ctrl-D> to end): "
@@ -164,6 +154,11 @@ function generate {
 }
 
 function main {
+    if ! exists latex || ! exists dvipng; then
+        echo "pnglatex requires latex and dvipng packages." >&2
+        exit 1
+    fi
+
     parse "$@"
 
     if [ $HELP -eq 1 ]; then
@@ -174,6 +169,32 @@ function main {
     if [ $SHOWVERSION -eq 1 ]; then
         version
         exit 0
+    fi
+
+    if [ "$FORMULA" ] && [ "$REVERSE" ]; then
+        echo "Incompatible options: use either -f or -r, not both." >&2
+        exit 1
+    fi
+
+    if [ "$REVERSE" ]; then
+        if ! exists identify; then
+            echo "Getting formula from image requires imagemagick package." >&2
+            exit 1
+        fi
+    fi
+
+    if [ "$PADDING" ] || [ "$BORDER" ] || [ "$MARGIN" ]; then
+        if ! exists convert; then
+            echo "Paddings, borders and margins require imagemagick package." >&2
+            exit 1
+        fi
+    fi
+
+    if [ $OPTIMIZE -eq 1 ]; then
+        if ! exists optipng; then
+            echo "Optimization requires optipng package." >&2
+            exit 1
+        fi
     fi
 
     if [ "$REVERSE" ]; then
@@ -197,11 +218,6 @@ function meta {
 }
 
 function optimize {
-    if ! exists optipng; then
-        echo "Optimization requires optipng package." >&2
-        exit 1
-    fi
-
     optipng -f0-5 -quiet -zc1-9 -zm1-9 -zs0-3 $PNGFILE
 }
 
@@ -294,19 +310,9 @@ function parse {
                 exit 1
         esac
     done
-
-    if [ "$FORMULA" ] && [ "$REVERSE" ]; then
-        echo "Incompatible options: use either -f or -r, not both." >&2
-        exit 1
-    fi
 }
 
 function reverse {
-    if ! exists identify; then
-        echo "Getting formula from image requires imagemagick package." >&2
-        exit 1
-    fi
-
     if [ ! -e "$REVERSE" ] || [ ! -r "$REVERSE" ]; then
         echo "Can't open file." >&2
         exit 1
