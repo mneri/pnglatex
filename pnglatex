@@ -89,7 +89,7 @@ function generate {
         done
     fi
 
-    FORMULA=$(trim $FORMULA)
+    FORMULA=$(trim "$FORMULA")
 
     if [ ! "$FORMULA" ]; then
         echo "No input formula." >&2
@@ -330,7 +330,7 @@ function scale {
 }
 
 function trim {
-    echo $1 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//'
+    echo $1 | sed 's/^[[:space:]]+//' | sed 's/[[:space:]]+$//'
 }
 
 function usage {
