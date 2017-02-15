@@ -34,7 +34,7 @@ TEXFILE=
 declare -r VERSION=0.10
 
 function box {
-    if ! command -v convert &> /dev/null; then
+    if ! exists convert; then
         echo "Paddings, borders and margins require imagemagick package." >&2
         exit 1
     fi
@@ -60,7 +60,7 @@ function clean {
 function dpi {
     local VALUE
 
-    if command -v xdpyinfo &> /dev/null; then
+    if exists xdpyinfo; then
         VALUE=$(xdpyinfo 2> /dev/null | grep resolution | sed -r 's/^[^0-9]+([0-9]+)x.*$/\1/')
     fi
 
@@ -69,6 +69,11 @@ function dpi {
     fi
 
     echo $VALUE
+}
+
+function exists {
+    local COMMAND=$1
+    return $(command -v $COMMAND &> /dev/null)
 }
 
 function generate {
@@ -80,7 +85,7 @@ function generate {
     local TMPDIR
     local SUFFIX
 
-    if ! command -v latex &> /dev/null || ! command -v dvipng &> /dev/null; then
+    if ! exists latex || ! exists dvipng; then
         echo "pnglatex requires latex and dvipng packages." >&2
         exit 1
     fi
@@ -186,13 +191,13 @@ function match {
 }
 
 function meta {
-    if command -v convert &> /dev/null; then
+    if exists convert; then
         convert -set latex:formula "${FORMULA//\\/\\\\}" -set generator "pnglatex $VERSION" $PNGFILE $PNGFILE
     fi
 }
 
 function optimize {
-    if ! command -v optipng &> /dev/null; then
+    if ! exists optipng; then
         echo "Optimization requires optipng package." >&2
         exit 1
     fi
@@ -297,7 +302,7 @@ function parse {
 }
 
 function reverse {
-    if ! command -v identify &> /dev/null; then
+    if ! exists identify; then
         echo "Getting formula from image requires imagemagick package." >&2
         exit 1
     fi
