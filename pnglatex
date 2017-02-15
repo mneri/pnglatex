@@ -331,7 +331,7 @@ function usage {
     echo "Examples:"
     echo "  pnglatex -f \"E=mc^2\""
     echo "  pnglatex -e displaymath -f \"\sum_{i=0}^n i=\frac{n(n+1)}{2}\""
-    echo "  pnglatex -b Transparent -p amssymb:amsmath -P 10x2 -s 12 -f \"A\triangleq B\""
+    echo "  pnglatex -b Transparent -p amssymb:amsmath -P 5x5 -s 12 -f \"A\triangleq B\""
 }
 
 function version {
