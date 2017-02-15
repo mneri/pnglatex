@@ -94,6 +94,13 @@ function generate {
         done
     fi
 
+    FORMULA=$(trim $FORMULA)
+
+    if [ ! "$FORMULA" ]; then
+        echo "No input formula." >&2
+        exit 1
+    fi
+
     TMPDIR=/tmp/me/mneri/pnglatex
 
     if [ ! -d $TMPDIR ]; then
@@ -302,6 +309,10 @@ function scale {
     local HEIGHT=$(($(echo $1 | sed -r 's/.*x//') * $DPI / $BASEDPI))
 
     echo ${WIDTH}x${HEIGHT}
+}
+
+function trim {
+    echo $(echo $1 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
 }
 
 function usage {
