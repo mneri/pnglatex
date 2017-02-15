@@ -293,7 +293,7 @@ function reverse {
         exit 1
     fi
 
-    echo $(identify -verbose "$REVERSE" | grep 'latex:formula:' | sed 's/latex:formula://')
+    echo $(identify -verbose "$REVERSE" | grep 'latex:formula:' | sed -r 's/[ \t]*latex:formula:[ \t]*(.*)/\1/')
 }
 
 function scale {
