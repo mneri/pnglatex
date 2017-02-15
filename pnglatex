@@ -52,6 +52,10 @@ function clean {
     rm -f $TEXFILE $BNAME.aux $BNAME.dvi $BNAME.log
 }
 
+function collapse {
+    echo $1 | sed -e 's/[[:space:]]+/ /'
+}
+
 function dpi {
     local VALUE
 
@@ -90,6 +94,7 @@ function generate {
     fi
 
     FORMULA=$(trim "$FORMULA")
+    FORMULA=$(collapse "$FORMULA")
 
     if [ ! "$FORMULA" ]; then
         echo "No input formula." >&2
