@@ -330,7 +330,7 @@ function scale {
 }
 
 function trim {
-    echo $(echo $1 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+    echo $1 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//'
 }
 
 function usage {
