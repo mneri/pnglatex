@@ -178,6 +178,13 @@ function main {
     fi
 }
 
+function match {
+    local PATTERN=$2
+    local TEXT=$1
+
+    return $(echo $TEXT | egrep $PATTERN &> /dev/null);
+}
+
 function meta {
     if command -v convert &> /dev/null; then
         convert -set latex:formula "${FORMULA//\\/\\\\}" -set generator "pnglatex $VERSION" $PNGFILE $PNGFILE
@@ -205,7 +212,7 @@ function parse {
             d)
                 DPI=$OPTARG
 
-                if [ ! $(echo $DPI | egrep '^[1-9][0-9]*$') ]; then
+                if ! match $DPI '^[1-9][0-9]*$'; then
                     echo "Invalid dpi." >&2
                     exit 1
                 fi
@@ -228,7 +235,7 @@ function parse {
             m)
                 MARGIN=$OPTARG
 
-                if [ ! $(echo $MARGIN | egrep '^[0-9]+(x[0-9]+)?$') ]; then
+                if ! match $MARGIN '^[0-9]+(x[0-9]+)?$'; then
                     echo "Invalid margin." >&2
                     exit 1
                 fi
@@ -256,7 +263,7 @@ function parse {
             P)
                 PADDING=$OPTARG
 
-                if [ ! $(echo $PADDING | egrep '^[0-9]+(x[0-9]+)?$') ]; then
+                if ! match $PADDING '^[0-9]+(x[0-9]+)?$'; then
                     echo "Invalid padding." >&2
                     exit 1
                 fi
@@ -267,7 +274,7 @@ function parse {
             s)
                 SIZE=$(echo $OPTARG | sed 's/pt//')
 
-                if ! echo $SIZE | egrep '^[1-9][0-9]*$'; then
+                if ! match $SIZE '^[1-9][0-9]*$'; then
                     echo "Invalid size." >&2
                     exit 1
                 fi
