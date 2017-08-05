@@ -278,7 +278,7 @@ function parse {
             p)
                 OIFS=$IFS
                 IFS=":"
-                PLIST=($OPTARG)
+                PLIST=$OPTARG
 
                 for P in $PLIST; do
                     PACKAGES=$PACKAGES\\usepackage{$P}
