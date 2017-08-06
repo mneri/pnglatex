@@ -222,10 +222,6 @@ function meta {
     fi
 }
 
-function optimize {
-    optipng -f0-5 -quiet -zc1-9 -zm1-9 -zs0-3 $PNGFILE
-}
-
 function parse {
     while getopts b:B:d:e:f:F:hH:m:Mo:Op:P:r:s:Sv ARG; do
         case $ARG in
@@ -315,6 +311,10 @@ function parse {
                 exit 1
         esac
     done
+}
+
+function optimize {
+    optipng -f0-5 -quiet -zc1-9 -zm1-9 -zs0-3 $PNGFILE
 }
 
 function reverse {
