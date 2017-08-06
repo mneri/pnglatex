@@ -31,7 +31,7 @@ SHOWVERSION=0
 SILENT=0
 SIZE=11
 TEXFILE=
-declare -r VERSION=0.10
+declare -r VERSION=0.10.1
 
 function box {
     if [ "$PADDING" ]; then
