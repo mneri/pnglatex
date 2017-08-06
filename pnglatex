@@ -33,6 +33,7 @@ SIZE=11
 TEXFILE=
 declare -r VERSION=0.10.1
 
+# Add margin, border and padding to the image.
 function box {
     if [ "$PADDING" ]; then
         convert $PNGFILE -bordercolor $BACKGROUND -border $(scale $PADDING) $PNGFILE
@@ -47,15 +48,23 @@ function box {
     fi
 }
 
+# Remove temporary files.
 function clean {
     local BNAME=${TEXFILE%.tex}
     rm -f $TEXFILE $BNAME.aux $BNAME.dvi $BNAME.log
 }
 
+# Collapse multiple subsequent spaces in a string.
+#
+# @param $1 the string to collapse.
+# @return echoes the collapsed string.
 function collapse {
     echo $1 | sed -e 's/[[:space:]]+/ /'
 }
 
+# Get screen's dpi.
+#
+# @return the dpi resolution of the screen.
 function dpi {
     local VALUE
 
@@ -70,11 +79,16 @@ function dpi {
     echo $VALUE
 }
 
+# Check if the specified command is installed on the system.
+#
+# @param $1 the command to test.
+# @return true if the command is installed on the system, false otherwise.
 function exists {
     local COMMAND=$1
     return $(command -v $COMMAND &> /dev/null)
 }
 
+# Generate the png image.
 function generate {
     local BNAME
     local BEGINENV
@@ -158,6 +172,7 @@ function generate {
     clean
 }
 
+# Entry point of the script.
 function main {
     if ! exists latex || ! exists dvipng; then
         echo "pnglatex requires latex and dvipng packages." >&2
@@ -209,6 +224,11 @@ function main {
     fi
 }
 
+# Return true if the specified string matches the specified regular expression
+#
+# @param $1 The string to test.
+# @param $2 The pattern to match.
+# @return true if the string matches the pattern, false otherwise.
 function match {
     local PATTERN=$2
     local TEXT=$1
@@ -216,12 +236,14 @@ function match {
     return $(echo $TEXT | egrep $PATTERN &> /dev/null);
 }
 
+# Add metadata to the image.
 function meta {
     if exists convert; then
         convert -set latex:formula "${FORMULA//\\/\\\\}" -set generator "pnglatex $VERSION" $PNGFILE $PNGFILE
     fi
 }
 
+# Parse command line arguments.
 function parse {
     while getopts b:B:d:e:f:F:hH:m:Mo:Op:P:r:s:Sv ARG; do
         case $ARG in
@@ -313,10 +335,16 @@ function parse {
     done
 }
 
+# Use optipng to optimize the image.
+#
+# @return echoes optipng output.
 function optimize {
     optipng -f0-5 -quiet -zc1-9 -zm1-9 -zs0-3 $PNGFILE
 }
 
+# Print the LaTeX formula starting from a png image.
+#
+# @return echoes the LaTeX formula.
 function reverse {
     if [ ! -e "$REVERSE" ] || [ ! -r "$REVERSE" ]; then
         echo "Can't open file." >&2
@@ -326,6 +354,10 @@ function reverse {
     echo $(identify -verbose "$REVERSE" | grep 'latex:formula:' | sed -r 's/[ \t]*latex:formula:[ \t]*(.*)/\1/')
 }
 
+# Scales the specified dimensions to the wanted dpi.
+#
+# @param $1 the dimension string, in the form of 'mxn', where m and n are integers.
+# @return echoes the scaled dimension string.
 function scale {
     local BASEDPI=$(dpi)
     local WIDTH=$(($(echo $1 | sed -r 's/x.*//') * $DPI / $BASEDPI))
@@ -334,10 +366,17 @@ function scale {
     echo ${WIDTH}x${HEIGHT}
 }
 
+# Remove spaces from the beginning and the end of a string.
+#
+# @param $1 the string to trim.
+# @return echoes the string.
 function trim {
     echo $1 | sed -e 's/^[[:space:]]+//' -e 's/[[:space:]]+$//'
 }
 
+# Print usage message.
+#
+# @return echoes the usage message.
 function usage {
     echo "pnglatex $VERSION - Write LaTeX formulas into PNG files."
     echo "Copyright Massimo Neri <hello@mneri.me>."
@@ -368,6 +407,9 @@ function usage {
     echo "  pnglatex -b Transparent -p amssymb:amsmath -P 5x5 -s 12 -f \"A\triangleq B\""
 }
 
+# Print pnglatex version.
+#
+# @return echoes the version.
 function version {
     echo $VERSION
 }
