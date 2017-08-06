@@ -359,7 +359,7 @@ function usage {
     echo "  -P <padding>     Set the padding."
     echo "  -r <file>        Read an image and print the LaTeX formula."
     echo "  -s <size>        Set the font size."
-    echo "  -S               Don't print image file name."
+    echo "  -S               Silent mode: don't print image file name."
     echo "  -v               Show version."
     echo
     echo "Examples:"
