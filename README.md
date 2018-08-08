@@ -19,9 +19,11 @@ Download or clone the repository, then type
 
 ## Tips
 Logs can give you a good idea of what went wrong.
+
     $ pnglatex -f "E=mc^2" -l out.log
 
 Using `xargs` you can generate and open your image with a one-liner; for example:
+
     $ pnglatex -f "E=mc^2" | xargs eog
 
 ## Options
