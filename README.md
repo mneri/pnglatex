@@ -18,13 +18,23 @@ Download or clone the repository, then type
 `pnglatex` depends on `dvipng`, `imagemagick`, `latex` and `optipng` packages.
 
 ## Tips
-Logs can give you a good idea of what went wrong.
-
-    $ pnglatex -f "E=mc^2" -l out.log
-
 Using `xargs` you can generate and open your image with a one-liner; for example:
 
     $ pnglatex -f "E=mc^2" | xargs eog
+
+Omitting `-f` option will start interactive mode.
+
+    $ pnglatex
+    Interactive mode (<Ctrl-D> to end):
+    E=mc^2
+
+Interactive mode is really useful when piping.
+
+    $ cat formula.tex | pnglatex
+
+Logs can give you a good idea of what went wrong.
+
+    $ pnglatex -f "E=mc^2" -l out.log
 
 ## Options
 + `-b <color>` Set the background color
