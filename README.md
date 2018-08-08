@@ -26,6 +26,7 @@ Download or clone the repository, then type
 + `-F <color>` Set the foreground color
 + `-h` Print the help message
 + `-H <header>` Input file in header
++ `-l <file>` Log file
 + `-m <margin>` Set the margin
 + `-M` Strip meta information
 + `-o <file>` Specify the output file name
