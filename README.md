@@ -22,15 +22,15 @@ Using `xargs` you can generate and open your image with a one-liner; for example
 
     $ pnglatex -f "E=mc^2" | xargs eog
 
+Piping is good.
+
+    $ cat formula.tex | pnglatex
+
 Omitting `-f` option will start interactive mode.
 
     $ pnglatex
     Interactive mode (<Ctrl-D> to end):
     E=mc^2
-
-Interactive mode is really useful when piping.
-
-    $ cat formula.tex | pnglatex
 
 Logs can give you a good idea of what went wrong.
 
