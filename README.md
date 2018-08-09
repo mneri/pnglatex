@@ -24,7 +24,7 @@ Using `xargs` you can generate and open your image with a one-liner; for example
 
 Piping is good.
 
-    $ cat formula.tex | pnglatex | xargs zip formula.zip
+    $ cat formula.tex | pnglatex | xargs basename | xargs zip formula.zip
 
 Omitting `-f` option will start interactive mode.
 
