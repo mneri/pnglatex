@@ -18,13 +18,13 @@ Download or clone the repository, then type
 `pnglatex` depends on `dvipng`, `imagemagick`, `latex` and `optipng` packages.
 
 ## Tips
+Piping is good.
+
+    $ cat formula.tex | pnglatex
+
 Using `xargs` you can generate and open your image with a one-liner; for example:
 
     $ pnglatex -f "E=mc^2" | xargs eog
-
-Piping is good.
-
-    $ cat formula.tex | pnglatex | xargs basename | xargs zip formula.zip
 
 Omitting `-f` option will start interactive mode.
 
