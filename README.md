@@ -1,7 +1,9 @@
 # pnglatex
-`pnglatex` is a small script that turns LaTeX formulas into png images. It's as simple as:
+`pnglatex` is a small script that turns LaTeX formulas into png images.
 
     $ pnglatex -f "E=mc^2"
+
+![E=mc^2](http://mneri.me/pnglatex?f=E%3Dmc^2 "E=mc^2")
 
 If the image was created using `pnglatex` you can also reverse the process.
 
