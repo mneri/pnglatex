@@ -51,8 +51,7 @@ function box {
 
 # Remove temporary files.
 function clean {
-    local BNAME=${TEXFILE%.tex}
-    rm -f $TEXFILE $BNAME.aux $BNAME.dvi $BNAME.log
+    rm -rf $TMPDIR
 }
 
 # Collapse multiple subsequent spaces in a string.
@@ -116,13 +115,8 @@ function generate {
         exit 1
     fi
 
-    TMPDIR=/tmp/me/mneri/pnglatex
-
-    if [ ! -d $TMPDIR ]; then
-        mkdir -p $TMPDIR
-    fi
-
-    TEXFILE=$(tempfile -d $TMPDIR -p f -s .tex)
+    TMPDIR="$(mktemp -d)"
+    TEXFILE="$(mktemp -p $TMPDIR fXXX.tex)"
 
     if [ "$ENVIRONMENT" = '$' ] || [ "$ENVIRONMENT" = '$$' ]; then
         BEGINENV=$ENVIRONMENT
