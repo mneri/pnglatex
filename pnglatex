@@ -388,7 +388,7 @@ function trim {
 # @return echoes the usage message.
 function usage {
     echo "pnglatex $VERSION - Write LaTeX formulas into PNG files."
-    echo "Copyright Massimo Neri <hello@mneri.me>."
+    echo "Copyright Massimo Neri <hello@mneri.me> and all the contributors."
     echo
     echo "List of options:"
     echo "  -b <color>       Set the background color."
