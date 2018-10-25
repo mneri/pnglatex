@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# This file is part of pnglatex <https://github.com/mneri/pnglatex>.
+# Copyright Massimo Neri <hello@mneri.me> and all the contributors.
+
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
