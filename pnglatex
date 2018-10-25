@@ -32,7 +32,7 @@ SHOWVERSION=0
 SILENT=0
 SIZE=11
 TEXFILE=
-declare -r VERSION=0.11
+declare -r VERSION=0.12
 
 # Add margin, border and padding to the image.
 function box {
