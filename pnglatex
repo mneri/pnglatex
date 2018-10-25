@@ -90,7 +90,6 @@ function exists {
 
 # Generate the png image.
 function generate {
-    local BNAME
     local BEGINENV
     local ENDENV
     local PREFIX
@@ -145,8 +144,7 @@ function generate {
     fi
 
     if [ ! "$PNGFILE" ]; then
-        BNAME=$(basename $TEXFILE)
-        PNGFILE=$PWD/${BNAME%.tex}.png
+        PNGFILE="$(mktemp -p $PWD fXXX.png)"
     fi
 
     if [ ! "$DPI" ]; then
