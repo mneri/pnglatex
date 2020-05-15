@@ -62,7 +62,7 @@ function clean {
 # @param $1 the string to collapse.
 # @return echoes the collapsed string.
 function collapse {
-    echo $1 | sed -e 's/[[:space:]]+/ /'
+    echo $1 | sed -r -e 's/[[:space:]]+/ /'
 }
 
 # Get screen's dpi.
@@ -383,7 +383,7 @@ function scale {
 # @param $1 the string to trim.
 # @return echoes the string.
 function trim {
-    echo $1 | sed -e 's/^[[:space:]]+//' -e 's/[[:space:]]+$//'
+    echo $1 | sed -r -e 's/^[[:space:]]+//' -e 's/[[:space:]]+$//'
 }
 
 # Print usage message.
