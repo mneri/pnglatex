@@ -401,7 +401,7 @@ function usage {
     echo "  -f <formula>     The LaTeX formula."
     echo "  -F <color>       Set the foreground color."
     echo "  -h               Print this help message."
-    echo "  -H <header>      Input file in header."
+    echo "  -H <file>        Insert the content of the specified file in the preamble."
     echo "  -l <file>        Log file."
     echo "  -m <margin>      Set the margin."
     echo "  -M               Strip meta information."

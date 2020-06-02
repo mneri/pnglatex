@@ -5,7 +5,7 @@
 
 ![E=mc^2](https://raw.githubusercontent.com/mneri/pnglatex/master/example.png)
 
-If the image was created using `pnglatex` you can also reverse the process.
+If the image was created using `pnglatex` you can get the original formula running:
 
     $ pnglatex -r formula.png
     E=mc^2
@@ -20,11 +20,11 @@ Download or clone the repository, then type
 `pnglatex` depends on `dvipng`, `imagemagick`, `latex` and `optipng` packages.
 
 ## Tips
-Piping is good.
+You can pipe into `pnglatex`:
 
     $ cat formula.tex | pnglatex
 
-Using `xargs` you can generate and open your image with a one-liner; for example:
+You can generate and open your image with a one-liner:
 
     $ pnglatex -f "E=mc^2" | xargs eog
 
@@ -46,7 +46,7 @@ Logs can give you a good idea of what went wrong.
 + `-f <formula>` The LaTeX formula
 + `-F <color>` Set the foreground color
 + `-h` Print the help message
-+ `-H <header>` Input file in header
++ `-H <file>` Insert the content of the specified file in the preamble
 + `-l <file>` Log file
 + `-m <margin>` Set the margin
 + `-M` Strip meta information
