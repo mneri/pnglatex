@@ -3,7 +3,7 @@
 
     $ pnglatex -f "E=mc^2"
 
-![E=mc^2](http://mneri.me/pnglatex?f=E%3Dmc^2 "E=mc^2")
+![E=mc^2](https://raw.githubusercontent.com/mneri/pnglatex/master/example.png)
 
 If the image was created using `pnglatex` you can also reverse the process.
 
