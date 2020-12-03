@@ -6,7 +6,6 @@ if [ -z "$*" ]; then
 else
     clip="$*"
 fi
-echo $clip
 pnglatex -d 300 -f "$clip" -o .temp.png -e align* -p amssymb:amsmath:cancel -S
 wl-copy < .temp.png
 rm .temp.png
