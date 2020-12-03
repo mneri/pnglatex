@@ -9,6 +9,18 @@ If the image was created using `pnglatex` you can get the original formula runni
 
     $ pnglatex -r formula.png
     E=mc^2
+    
+### Cliptex plugin
+This simple plugin allows a quick interaction of pnglatex with the clipboard using [wl-clipboard](https://github.com/bugaevc/wl-clipboard) (required).
+You can copy a formula you see anywhere and then run cliptex `$ cliptex`. This command will substitute the content of the clipboard from the latex text, to a `png` image using pnglatex. Using ctrl-v will result in pasting an image instead of the copied text. Suggestion: add a system shortcut to call cliptex (e.g ctrl-q).
+
+Example to substitute tex with an image in a textfield (eq in the browse, like gmail):
+
+    # 1. write tex formula eg in gmail
+    # 2. select text
+    # ctrl-x
+    cliptex # in terminal or ctrl-q (if added to the system shortcuts)
+    # ctrl-v
 
 ## Installation
 Download or clone the repository, then type
