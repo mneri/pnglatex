@@ -1,6 +1,8 @@
 #!/bin/bash
+# If the command is called with no arguments, then use clipboard
 if [ -z "$*" ]; then
     clip="$(wl-paste)"
+# Otherwise forward the arguments to pnglatex
 else
     clip="$*"
 fi
