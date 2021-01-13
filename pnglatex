@@ -26,7 +26,6 @@ HEADER=
 HELP=0
 LOGFILE=
 MARGIN=
-META=1
 OPTIMIZE=0
 PACKAGES=
 PADDING=
@@ -35,7 +34,7 @@ SHOWVERSION=0
 SILENT=0
 SIZE=11
 TEXFILE=
-declare -r VERSION=0.12
+declare -r VERSION=0.13
 
 # Add margin, border and padding to the image.
 function box {
@@ -55,14 +54,6 @@ function box {
 # Remove temporary files.
 function clean {
     rm -rf $TMPDIR
-}
-
-# Collapse multiple subsequent spaces in a string.
-#
-# @param $1 the string to collapse.
-# @return echoes the collapsed string.
-function collapse {
-    echo $1 | sed -r -e 's/[[:space:]]+/ /'
 }
 
 # Get screen's dpi.
@@ -96,29 +87,11 @@ function generate {
     local BEGINENV
     local ENDENV
     local PREFIX
-    local MESSAGE
     local TMPDIR
     local SUFFIX
 
-    if [ ! "$FORMULA" ]; then
-        MESSAGE="Interactive mode (<Ctrl-D> to end): "
-
-        while read -p "$MESSAGE" -r LINE; do
-            MESSAGE=
-            FORMULA="$FORMULA $LINE"
-        done
-    fi
-
-    FORMULA=$(trim "$FORMULA")
-    FORMULA=$(collapse "$FORMULA")
-
-    if [ ! "$FORMULA" ]; then
-        echo "No input formula." >&2
-        exit 1
-    fi
-
     TMPDIR="$(mktemp -d)"
-    TEXFILE="$(mktemp -p $TMPDIR fXXX.tex)"
+    TEXFILE="$(mktemp -p $TMPDIR tXXX.tex)"
 
     if [ "$ENVIRONMENT" = '$' ] || [ "$ENVIRONMENT" = '$$' ]; then
         BEGINENV=$ENVIRONMENT
@@ -128,10 +101,25 @@ function generate {
         ENDENV="\end{$ENVIRONMENT}"
     fi
 
-    PREFIX="\documentclass[${SIZE}pt]{article}$PACKAGES\pagestyle{empty}$HEADER\begin{document}$BEGINENV"
-    SUFFIX="$ENDENV\end{document}"
+    echo "\documentclass[${SIZE}pt]{article}$PACKAGES\pagestyle{empty}" > $TEXFILE
 
-    echo "$PREFIX $FORMULA $SUFFIX" > $TEXFILE
+    if [ ! -z $HEADER ]; then
+	if [ -f $HEADER ]; then
+	    cat $HEADER >> $TEXFILE
+	else
+	    echo "File does not exist: $HEADER" >&2
+	fi
+    fi
+
+    echo "\begin{document}$BEGINENV" >> $TEXFILE
+
+    if [ ! "$FORMULA" ]; then
+	cat - >> $TEXFILE
+    else
+	echo $FORMULA >> $TEXFILE
+    fi
+
+    echo "$ENDENV\end{document}" >> $TEXFILE
 
     if [ "$LOGFILE" ]; then
         cat $TEXFILE > $LOGFILE
@@ -166,10 +154,6 @@ function generate {
         optimize
     fi
 
-    if [ $META -eq 1 ]; then
-        meta
-    fi
-
     if [ $SILENT -eq 0 ]; then
         readlink -f $PNGFILE
     fi
@@ -196,18 +180,6 @@ function main {
         exit 0
     fi
 
-    if [ "$FORMULA" ] && [ "$REVERSE" ]; then
-        echo "Incompatible options: use either -f or -r, not both." >&2
-        exit 1
-    fi
-
-    if [ "$REVERSE" ]; then
-        if ! exists identify; then
-            echo "Getting formula from image requires imagemagick package." >&2
-            exit 1
-        fi
-    fi
-
     if [ "$PADDING" ] || [ "$BORDER" ] || [ "$MARGIN" ]; then
         if ! exists convert; then
             echo "Paddings, borders and margins require imagemagick package." >&2
@@ -222,11 +194,7 @@ function main {
         fi
     fi
 
-    if [ "$REVERSE" ]; then
-        reverse
-    else
-        generate
-    fi
+    generate
 }
 
 # Return true if the specified string matches the specified regular expression
@@ -241,19 +209,12 @@ function match {
     return $(echo $TEXT | egrep $PATTERN &> /dev/null);
 }
 
-# Add metadata to the image.
-function meta {
-    if exists convert; then
-        convert -set latex:formula "${FORMULA//\\/\\\\}" -set generator "pnglatex $VERSION" $PNGFILE $PNGFILE
-    fi
-}
-
 # Use optipng to optimize the image.
 #
 # @return echoes optipng output.
 function optimize {
     if [ "$LOGFILE" ]; then
-        optipng -f0-5 -zc1-9 -zm1-9 -zs0-3 $PNGFILE >> $LOGFILE
+        optipng -f0-5 -zc1-9 -zm1-9 -zs0-3 $PNGFILE >> $LOGFILE 2>&1
     else
         optipng -f0-5 -quiet -zc1-9 -zm1-9 -zs0-3 $PNGFILE
     fi
@@ -290,7 +251,7 @@ function parse {
                 HELP=1
                 ;;
             H)
-                HEADER=\\input\{$OPTARG\}
+                HEADER=$OPTARG
                 ;;
             l)
                 LOGFILE=$OPTARG
@@ -302,9 +263,6 @@ function parse {
                     echo "Invalid margin." >&2
                     exit 1
                 fi
-                ;;
-            M)
-                META=0
                 ;;
             o)
                 PNGFILE=$OPTARG
@@ -331,9 +289,6 @@ function parse {
                     exit 1
                 fi
                 ;;
-            r)
-                REVERSE=$OPTARG
-                ;;
             s)
                 SIZE=$(echo $OPTARG | sed 's/pt//')
 
@@ -354,18 +309,6 @@ function parse {
     done
 }
 
-# Print the LaTeX formula starting from a png image.
-#
-# @return echoes the LaTeX formula.
-function reverse {
-    if [ ! -e "$REVERSE" ] || [ ! -r "$REVERSE" ]; then
-        echo "Can't open file." >&2
-        exit 1
-    fi
-
-    echo $(identify -verbose "$REVERSE" | grep 'latex:formula:' | sed -r 's/[ \t]*latex:formula:[ \t]*(.*)/\1/')
-}
-
 # Scales the specified dimensions to the wanted dpi.
 #
 # @param $1 the dimension string, in the form of 'mxn', where m and n are integers.
@@ -376,14 +319,6 @@ function scale {
     local HEIGHT=$(($(echo $1 | sed -r 's/.*x//') * $DPI / $BASEDPI))
 
     echo ${WIDTH}x${HEIGHT}
-}
-
-# Remove spaces from the beginning and the end of a string.
-#
-# @param $1 the string to trim.
-# @return echoes the string.
-function trim {
-    echo $1 | sed -r -e 's/^[[:space:]]+//' -e 's/[[:space:]]+$//'
 }
 
 # Print usage message.
@@ -404,12 +339,10 @@ function usage {
     echo "  -H <file>        Insert the content of the specified file in the preamble."
     echo "  -l <file>        Log file."
     echo "  -m <margin>      Set the margin."
-    echo "  -M               Strip meta information."
     echo "  -o <file>        Specify the output file name."
     echo "  -O               Optimize the image."
     echo "  -p <packages>    A colon separated list of LaTeX package names."
     echo "  -P <padding>     Set the padding."
-    echo "  -r <file>        Read an image and print the LaTeX formula."
     echo "  -s <size>        Set the font size."
     echo "  -S               Silent mode: don't print image file name."
     echo "  -v               Show version."
