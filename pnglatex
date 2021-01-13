@@ -101,14 +101,18 @@ function generate {
         ENDENV="\end{$ENVIRONMENT}"
     fi
 
-    echo "\documentclass[${SIZE}pt]{article}$PACKAGES\pagestyle{empty}" > $TEXFILE
+    echo "\documentclass[${SIZE}pt]{article}\pagestyle{empty}" > $TEXFILE
 
-    if [ ! -z $HEADER ]; then
-	if [ -f $HEADER ]; then
-	    cat $HEADER >> $TEXFILE
-	else
-	    echo "File does not exist: $HEADER" >&2
-	fi
+    {
+	IFS=":"
+	
+	for P in $PACKAGES; do
+            echo "\usepackage{$P}" >> $TEXFILE
+	done
+    }
+
+    if [ ! -z "$HEADER" ]; then
+	cat $HEADER >> $TEXFILE
     fi
 
     echo "\begin{document}$BEGINENV" >> $TEXFILE
@@ -168,6 +172,7 @@ function main {
         exit 1
     fi
 
+    properties
     parse "$@"
 
     if [ $HELP -eq 1 ]; then
@@ -192,6 +197,35 @@ function main {
             echo "Optimization requires optipng package." >&2
             exit 1
         fi
+    fi
+
+    if [ ! -z "$HEADER" ] && [ ! -f "$HEADER" ]; then
+	echo "File does not exist: $HEADER" >&2
+	exit 1
+    fi
+
+    if [ ! -z "$DPI" ] &&  ! match "$DPI" '^[1-9][0-9]*$'; then
+        echo "Invalid dpi." >&2
+        exit 1
+    fi
+
+    if [ ! -z "$MARGIN" ] && ! match "$MARGIN" '^[0-9]+(x[0-9]+)?$'; then
+        echo "Invalid margin." >&2
+        exit 1
+    fi
+
+    if [ ! -z "$PADDING" ] && ! match "$PADDING" '^[0-9]+(x[0-9]+)?$'; then
+        echo "Invalid padding." >&2
+        exit 1
+    fi
+
+    if [ ! -z "$SIZE" ]; then
+	SIZE=$(echo $SIZE | sed 's/pt//')
+
+	if ! match "$SIZE" '^[1-9][0-9]*$'; then
+	    echo "Invalid font size." >&2
+	    exit 1
+	fi
     fi
 
     generate
@@ -232,11 +266,6 @@ function parse {
                 ;;
             d)
                 DPI=$OPTARG
-
-                if ! match $DPI '^[1-9][0-9]*$'; then
-                    echo "Invalid dpi." >&2
-                    exit 1
-                fi
                 ;;
             e)
                 ENVIRONMENT=$OPTARG
@@ -258,11 +287,6 @@ function parse {
                 ;;
             m)
                 MARGIN=$OPTARG
-
-                if ! match $MARGIN '^[0-9]+(x[0-9]+)?$'; then
-                    echo "Invalid margin." >&2
-                    exit 1
-                fi
                 ;;
             o)
                 PNGFILE=$OPTARG
@@ -271,31 +295,13 @@ function parse {
                 OPTIMIZE=1
                 ;;
             p)
-                OIFS=$IFS
-                IFS=":"
-                PLIST=$OPTARG
-
-                for P in $PLIST; do
-                    PACKAGES=$PACKAGES\\usepackage{$P}
-                done
-
-                IFS=$OIFS
+		PACKAGES=$OPTARG
                 ;;
             P)
                 PADDING=$OPTARG
-
-                if ! match $PADDING '^[0-9]+(x[0-9]+)?$'; then
-                    echo "Invalid padding." >&2
-                    exit 1
-                fi
                 ;;
             s)
-                SIZE=$(echo $OPTARG | sed 's/pt//')
-
-                if ! match $SIZE '^[1-9][0-9]*$'; then
-                    echo "Invalid font size." >&2
-                    exit 1
-                fi
+                SIZE=$OPTARG
                 ;;
             S)
                 SILENT=1
@@ -307,6 +313,50 @@ function parse {
                 exit 1
         esac
     done
+}
+
+function properties {
+    local PROPERTIES=~/.pnglatex
+
+    if [ -f $PROPERTIES ]; then
+	while IFS="=" read -r KEY VALUE; do
+	    case $KEY in
+		BACKGROUND)
+		    BACKGROUND=$VALUE
+		;;
+		BORDER)
+		    BORDER=$VALUE
+		;;
+		DPI)
+		    DPI=$VALUE
+		;;
+		ENVIRONMENT)
+		    ENVIRONMENT=$VALUE
+		;;
+		FOREGROUND)
+		    FOREGROUND=$VALUE
+		;;
+		HEADER)
+		    HEADER=$VALUE
+		;;
+		MARGIN)
+		    MARGIN=$VALUE
+		;;
+		OPTIMIZE)
+		    OPTIMIZE=$VALUE
+		;;
+		PACKAGES)
+		    PACKAGES=$VALUE
+		;;
+		PADDING)
+		    PADDING=$VALUE
+		;;
+		SIZE)
+                    SIZE=$(echo $VALUE | sed 's/pt//')
+		;;
+	    esac
+	done < $PROPERTIES
+    fi
 }
 
 # Scales the specified dimensions to the wanted dpi.
