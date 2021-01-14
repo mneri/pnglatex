@@ -16,13 +16,86 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# If the command is called with no arguments, then use clipboard
-if [ -z "$*" ]; then
-    clip="$(wl-paste)"
-# Otherwise forward the arguments to pnglatex
-else
-    clip="$*"
-fi
-pnglatex -d 300 -f "$clip" -o .temp.png -e align* -p amssymb:amsmath:cancel -S
-wl-copy < .temp.png
-rm .temp.png
+HELP=
+SESSION=
+SHOWVERSION=
+declare -r VERSION=0.13
+
+function generate {
+    local TMPFILE
+    
+    if [ -z "$SESSION" ]; then
+	SESSION=$(session)
+    fi
+
+    if [ "$SESSION" = "wayland" ]; then
+	TMPFILE=$(wl-paste | pnglatex)
+	wl-copy < "$TMPFILE"
+    elif [ "$SESSION" = "x11" ]; then
+	TMPFILE=$(xclip -o | pnglatex)
+	xclip -selection clipboard -t image/png -i "$TMPFILE"
+    else
+	echo "Unsupported session: $SESSION" >&2
+	exit 1
+    fi
+
+    rm "$TMPFILE"
+}
+
+function main {
+    parse "$@"
+
+    if [ "$HELP" = 1 ]; then
+	usage
+	exit 0
+    fi
+
+    if [ "$SHOWVERSION" = 1 ]; then
+	version
+	exit 0
+    fi
+
+    generate
+}
+
+function parse {
+    while getopts hs:v ARG; do
+	case $ARG in
+	    h)
+		HELP=1
+		;;
+	    s)
+		SESSION=$OPTARG
+		;;
+	    v)
+		SHOWVERSION=1
+		;;
+	    ?)
+	        exit 1
+	esac
+    done
+}
+
+function session {
+    loginctl | grep $(id -u) | awk '/tty/ {print $1}' | xargs loginctl show-session -p Type | awk -F= '{print $2}'
+}
+
+function usage {
+    echo "cliptex $VERSION - Generate a formula from the system clipboard."
+    echo "Copyright Massimo Neri <hello@mneri.me> and all the contributors."
+    echo
+    echo "List of options:"
+    echo "  -h           Print this help message."
+    echo "  -s <session> Force a session (wayland or x11)."
+    echo "  -v           Show version."
+    echo
+    echo "Examples:"
+    echo "  cliptex"
+    echo "  cliptex -s x11"
+}
+
+function version {
+    echo $VERSION
+}
+
+main "$@"
