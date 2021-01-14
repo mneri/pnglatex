@@ -27,6 +27,7 @@ Omitting `-f` option will start interactive mode.
 
     $ pnglatex
     E=mc^2
+    <Ctrl-D>
 
 Logs can give you a good idea of what went wrong.
 
