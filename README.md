@@ -78,8 +78,8 @@ The above command uses the content of the system clipboard to generate a LaTeX f
 generated image.
 
 ## Tips
-Bind the script to the <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>C</kbd> key combination. Write your formula direcly in the GMail
-editor, select it and strike the key combination. Now press <kbd>Ctrl</kbd> + <kbd>V</kbd> to replace the formula with the
+Bind the script to the <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>C</kbd> key combination. Write your formula directly in the GMail
+editor, select it and strike the key combination. Then, press <kbd>Ctrl</kbd> + <kbd>V</kbd> to replace the formula with the
 generated image.
 
 `cliptex` uses the default options set in the `~/.pnglatex` file.
