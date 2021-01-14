@@ -82,6 +82,8 @@ Bind the script to the <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>C</kbd> key combi
 editor, select it and strike the key combination. Now press <kbd>Ctrl</kbd> + <kbd>V</kbd> to replace the formula with the
 generated image.
 
+`cliptex` uses the default options set in the `~/.pnglatex` file.
+
 ## Installation
 Download or clone the repository, then type
 
