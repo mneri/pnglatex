@@ -67,12 +67,19 @@ following is an example content:
     PADDING=3
     SIZE=11
 
+Command line provided options override the default options in the `~/.pnglatex` file.
+
 # cliptex Plugin
 `cliptex` is a small script that creates LaTeX formulas using the system clipboard.
 
     $ cliptex
 
-The above command uses the content of the system clipboard to generate a LaTeX formula. The clipboard is the replaced by the
+The above command uses the content of the system clipboard to generate a LaTeX formula. The clipboard is then replaced by the
+generated image.
+
+## Tips
+Bind the script to the <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>C</kbd> key combination. Write your formula direcly in the GMail
+editor, select it and strike the key combination. Now press <kbd>Ctrl</kbd> + <kbd>V</kbd> to replace the formula with the
 generated image.
 
 ## Installation
