@@ -16,11 +16,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-BACKGROUND=White
+BACKGROUND=
 BORDER=
 DPI=
-ENVIRONMENT=\$
-FOREGROUND=Black
+ENVIRONMENT=
+FOREGROUND=
 FORMULA=
 HEADER=
 HELP=0
@@ -32,7 +32,7 @@ PADDING=
 PNGFILE=
 SHOWVERSION=0
 SILENT=0
-SIZE=11
+SIZE=
 TEXFILE=
 declare -r VERSION=0.13
 
@@ -142,10 +142,6 @@ function generate {
         PNGFILE="$(mktemp -p $PWD fXXX.png)"
     fi
 
-    if [ ! "$DPI" ]; then
-        DPI=$(dpi)
-    fi
-
     dvipng -bg $BACKGROUND -D $DPI -fg $FOREGROUND -o $PNGFILE -q --strict -T tight ${TEXFILE%.tex}.dvi \
         | tee -a $LOGFILE \
         > /dev/null
@@ -204,9 +200,25 @@ function main {
 	exit 1
     fi
 
-    if [ ! -z "$DPI" ] &&  ! match "$DPI" '^[1-9][0-9]*$'; then
-        echo "Invalid dpi." >&2
-        exit 1
+    if [ -z "$BACKGROUND" ]; then
+	BACKGROUND=White
+    fi
+
+    if [ -z "$DPI" ]; then
+        DPI=$(dpi)
+    else
+	if  ! match "$DPI" '^[1-9][0-9]*$'; then
+            echo "Invalid dpi." >&2
+            exit 1
+	fi
+    fi
+
+    if [ -z "$ENVIRONMENT" ]; then
+	ENVIRONMENT=\$
+    fi
+
+    if [ -z "$FOREGROUND" ]; then
+	FOREGROUND=Black
     fi
 
     if [ ! -z "$MARGIN" ] && ! match "$MARGIN" '^[0-9]+(x[0-9]+)?$'; then
@@ -219,7 +231,9 @@ function main {
         exit 1
     fi
 
-    if [ ! -z "$SIZE" ]; then
+    if [ -z "$SIZE" ]; then
+	SIZE=11
+    else
 	SIZE=$(echo $SIZE | sed 's/pt//')
 
 	if ! match "$SIZE" '^[1-9][0-9]*$'; then
