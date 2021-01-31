@@ -1,6 +1,6 @@
 # pnglatex
 `pnglatex` is a small script that turns
-[LaTeX](https://raw.githubusercontent.com/mneri/pnglatex/master/latex.png)
+![LaTeX](https://raw.githubusercontent.com/mneri/pnglatex/master/latex.png)
 formulas into png images.
 
     $ pnglatex -f "E=mc^2"
@@ -74,7 +74,7 @@ Command line provided options override the default options in the `~/.pnglatex` 
 
 # cliptex Plugin
 `cliptex` is a small script that creates
-[LaTeX](https://raw.githubusercontent.com/mneri/pnglatex/master/latex.png)
+![LaTeX](https://raw.githubusercontent.com/mneri/pnglatex/master/latex.png)
 formulas using the system clipboard.
 
     $ cliptex
