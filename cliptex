@@ -22,6 +22,12 @@ SILENT=0
 SHOWVERSION=
 declare -r VERSION=0.13
 
+function failure {
+    if [ "$SILENT" == 0 ] && [ ! -t 1 ]; then
+	notify-send -i image-missing "pnglatex" "Could not generate the image: invalid formula"
+    fi
+}
+
 function generate {
     local TMPFILE
     
@@ -48,18 +54,6 @@ function generate {
     else
 	failure
 	exit 1
-    fi
-}
-
-function failure {
-    if [ "$SILENT" == 0 ] && [ ! -t 1 ]; then
-	notify-send -i image-missing "pnglatex" "Could not generate the image: invalid formula"
-    fi
-}
-
-function success {
-    if [ "$SILENT" == 0 ] && [ ! -t 1 ]; then
-	notify-send -i image-x-generic "pnglatex" "Image copied to the system clipboard"
     fi
 }
 
@@ -102,6 +96,12 @@ function parse {
 
 function session {
     loginctl | grep $(id -u) | awk '/tty/ {print $1}' | xargs loginctl show-session -p Type | awk -F= '{print $2}'
+}
+
+function success {
+    if [ "$SILENT" == 0 ] && [ ! -t 1 ]; then
+	notify-send -i image-x-generic "pnglatex" "Image copied to the system clipboard"
+    fi
 }
 
 function usage {
