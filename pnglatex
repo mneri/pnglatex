@@ -97,7 +97,7 @@ function generate {
         BEGINENV=$ENVIRONMENT
         ENDENV=$ENVIRONMENT
     else
-        BEGINENV="\begin{$ENVIRONMENT}"
+        BEGINENV=$(echo $ENVIRONMENT | sed -e 's/\([^\[\{]*\)/\\begin\{\1\}/')
         ENDENV="\end{$ENVIRONMENT}"
     fi
 
@@ -107,7 +107,7 @@ function generate {
 	IFS=":"
 	
 	for P in $PACKAGES; do
-            echo "\usepackage{$P}" >> $TEXFILE
+            echo $P | sed -e 's/\([^\[\{]*\)/\\usepackage\{\1\}/' >> $TEXFILE
 	done
     }
 
