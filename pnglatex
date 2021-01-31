@@ -396,7 +396,7 @@ function usage {
     echo "  -b <color>       Set the background color."
     echo "  -B <color>       Set the border color."
     echo "  -d <dpi>         Set the output resolution to the specified dpi."
-    echo "  -e <environment> Set the environment."
+    echo "  -e <environment> Set the environment with [options] and {arguments}."
     echo "  -f <formula>     The LaTeX formula."
     echo "  -F <color>       Set the foreground color."
     echo "  -h               Print this help message."
