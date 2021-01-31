@@ -40,7 +40,8 @@ Logs can give you a good idea of what went wrong.
 + `-B <color>` Set the border color
 + `-d <dpi>` Set the output resolution to the specified dpi
 + `-e <environment>` Set the environment for the formula (i.e. `displaymath` or `eqnarray`)
-+ `-f <formula>` The LaTeX formula
++ `-f <formula>` The
+  ![LaTeX](https://raw.githubusercontent.com/mneri/pnglatex/master/latex.png) formula
 + `-F <color>` Set the foreground color
 + `-h` Print the help message
 + `-H <file>` Insert the content of the specified file in the preamble
@@ -48,7 +49,8 @@ Logs can give you a good idea of what went wrong.
 + `-m <margin>` Set the margin
 + `-o <file>` Specify the output file name
 + `-O` Optimize the image
-+ `-p <packages>` A colon separated list of LaTeX package names
++ `-p <packages>` A colon separated list of
+  ![LaTeX](https://raw.githubusercontent.com/mneri/pnglatex/master/latex.png) package names
 + `-P <padding>` Set the padding
 + `-s <size>` Set the font size
 + `-S` Don't print image file name
@@ -70,7 +72,8 @@ following is an example content:
     PADDING=3
     SIZE=11
 
-Command line provided options override the default options in the `~/.pnglatex` file.
+Command line provided options override the default options in the `~/.pnglatex`
+file.
 
 # cliptex Plugin
 `cliptex` is a small script that creates
@@ -79,13 +82,16 @@ formulas using the system clipboard.
 
     $ cliptex
 
-The above command uses the content of the system clipboard to generate a LaTeX formula. The clipboard is then replaced by the
+The above command uses the content of the system clipboard to generate a
+![LaTeX](https://raw.githubusercontent.com/mneri/pnglatex/master/latex.png)
+formula. The clipboard is then replaced by the
 generated image.
 
 ## Tips
-Bind the script to the <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>C</kbd> key combination. Write your formula directly in the GMail
-editor, select it and strike the key combination. Then, press <kbd>Ctrl</kbd> + <kbd>V</kbd> to replace the formula with the
-generated image.
+Bind the script to the <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>C</kbd> key
+combination. Write your formula directly in the GMail editor, select it and
+strike the key combination. Then, press <kbd>Ctrl</kbd> + <kbd>V</kbd> to
+replace the formula with the generated image.
 
 `cliptex` uses the default options set in the `~/.pnglatex` file.
 
