@@ -261,11 +261,7 @@ function match {
 #
 # @return echoes optipng output.
 function optimize {
-    if [ "$LOGFILE" ]; then
-        optipng -f0-5 -zc1-9 -zm1-9 -zs0-3 $PNGFILE >> $LOGFILE 2>&1
-    else
-        optipng -f0-5 -quiet -zc1-9 -zm1-9 -zs0-3 $PNGFILE
-    fi
+    optipng -f0-5 -quiet -zc1-9 -zm1-9 -zs0-3 $PNGFILE
 }
 
 # Parse command line arguments.
