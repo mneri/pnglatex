@@ -18,6 +18,7 @@
 
 HELP=
 SESSION=
+SILENT=0
 SHOWVERSION=
 declare -r VERSION=0.13
 
@@ -51,13 +52,13 @@ function generate {
 }
 
 function failure {
-    if [ ! -t 1 ]; then
+    if [ "$SILENT" == 0 ] && [ ! -t 1 ]; then
 	notify-send -i image-missing "pnglatex" "Could not generate the image: invalid formula"
     fi
 }
 
 function success {
-    if [ ! -t 1 ]; then
+    if [ "$SILENT" == 0 ] && [ ! -t 1 ]; then
 	notify-send -i image-x-generic "pnglatex" "Image copied to the system clipboard"
     fi
 }
@@ -79,13 +80,16 @@ function main {
 }
 
 function parse {
-    while getopts hs:v ARG; do
+    while getopts hs:Sv ARG; do
 	case $ARG in
 	    h)
 		HELP=1
 		;;
 	    s)
 		SESSION=$OPTARG
+		;;
+	    S)
+		SILENT=1
 		;;
 	    v)
 		SHOWVERSION=1
@@ -107,6 +111,7 @@ function usage {
     echo "List of options:"
     echo "  -h           Print this help message."
     echo "  -s <session> Force a session (wayland or x11)."
+    echo "  -S           Don't show system notifications."
     echo "  -v           Show version."
     echo
     echo "Examples:"

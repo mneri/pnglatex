@@ -97,4 +97,5 @@ Download or clone the repository, then type
 ## Options
 + `-h` Print this help message.
 + `-s <session>` Force a session (wayland or x11).
++ `-S` Don't show system notifications.
 + `-v` Show version.
