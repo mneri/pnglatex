@@ -98,7 +98,7 @@ function generate {
         ENDENV=$ENVIRONMENT
     else
         BEGINENV=$(echo $ENVIRONMENT | sed -e 's/\([^\[\{]*\)/\\begin\{\1\}/')
-        ENDENV="\end{$ENVIRONMENT}"
+        ENDENV=$(echo $ENVIRONMENT | sed -e 's/\([^\[\{]*\).*/\\end\{\1\}/')
     fi
 
     echo "\documentclass[${SIZE}pt]{article}\pagestyle{empty}" > $TEXFILE
