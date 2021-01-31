@@ -28,18 +28,38 @@ function generate {
 	SESSION=$(session)
     fi
 
-    if [ "$SESSION" = "wayland" ]; then
-	TMPFILE=$(wl-paste | pnglatex)
-	wl-copy < "$TMPFILE"
-    elif [ "$SESSION" = "x11" ]; then
-	TMPFILE=$(xclip -o | pnglatex)
-	xclip -selection clipboard -t image/png -i "$TMPFILE"
-    else
+    if [ "$SESSION" != "wayland" ] && [ "$SESSION" != "x11" ]; then
 	echo "Unsupported session: $SESSION" >&2
 	exit 1
     fi
+    
+    if [ "$SESSION" = "wayland" ]; then
+	TMPFILE=$(wl-paste | pnglatex)
+	wl-copy < "$TMPFILE" > /dev/null 2>&1
+    elif [ "$SESSION" = "x11" ]; then
+	TMPFILE=$(xclip -o | pnglatex)
+	xclip -selection clipboard -t image/png -i "$TMPFILE" > /dev/null 2>&1
+    fi
 
-    rm "$TMPFILE"
+    if [ -f "$TMPFILE" ]; then
+	success
+	rm "$TMPFILE"
+    else
+	failure
+	exit 1
+    fi
+}
+
+function failure {
+    if [ ! -t 1 ]; then
+	notify-send -i image-missing "pnglatex" "Could not generate the image: invalid formula"
+    fi
+}
+
+function success {
+    if [ ! -t 1 ]; then
+	notify-send -i image-x-generic "pnglatex" "Image copied to the system clipboard"
+    fi
 }
 
 function main {
