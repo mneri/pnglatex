@@ -23,7 +23,7 @@ SHOWVERSION=
 declare -r VERSION=0.13
 
 function failure {
-    if [ "$SILENT" == 0 ] && [ ! -t 1 ]; then
+    if [ ! -t 1 ]; then
 	notify-send -i image-missing "pnglatex" "Could not generate the image: invalid formula"
     fi
 }
