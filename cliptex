@@ -18,6 +18,7 @@
 
 HELP=
 SESSION=
+UNAME=
 SILENT=0
 SHOWVERSION=
 declare -r VERSION=0.13
@@ -35,7 +36,7 @@ function generate {
 	SESSION=$(session)
     fi
 
-    if [ "$SESSION" != "wayland" ] && [ "$SESSION" != "x11" ]; then
+    if [ "$SESSION" != "wayland" ] && [ "$SESSION" != "x11" ] && [ "$SESSION" != "WindowServer" ]; then
 	echo "Unsupported session: $SESSION" >&2
 	exit 1
     fi
@@ -46,6 +47,9 @@ function generate {
     elif [ "$SESSION" = "x11" ]; then
 	TMPFILE=$(xclip -o | pnglatex)
 	xclip -selection clipboard -t image/png -i "$TMPFILE" > /dev/null 2>&1
+    elif [ "$SESSION" = "WindowServer" ]; then
+	    TMPFILE=$(pbpaste | pnglatex)
+	    osascript -e "set the clipboard to (read (POSIX file \"$TMPFILE\") as JPEG picture)" 
     fi
 
     if [ -f "$TMPFILE" ]; then
@@ -95,7 +99,11 @@ function parse {
 }
 
 function session {
-    loginctl | grep $(id -u) | awk '/tty/ {print $1}' | xargs loginctl show-session -p Type | awk -F= '{print $2}'
+    if [ "$(uname)" = "Darwin" ]; then
+	    echo WindowServer
+    else
+	    loginctl | grep $(id -u) | awk '/tty/ {print $1}' | xargs loginctl show-session -p Type | awk -F= '{print $2}'
+    fi
 }
 
 function success {

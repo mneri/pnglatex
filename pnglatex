@@ -16,6 +16,25 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+has_cmd() {
+	command -v -- "$1" >/dev/null 2>&1
+}
+
+MKTEMP=$(command -v mktemp)
+READLINK=$(command -v readlink)
+SED=$(command -v sed)
+if [ "$(uname)" == "Darwin" ]; then
+	for cmd in gmktemp greadlink gsed; do
+		if ! has_cmd "$cmd"; then
+			echo ":: This test requires the ${cmd} executable."
+			exit 1
+		fi
+	done
+	MKTEMP=gmktemp
+	READLINK=greadlink
+	SED=gsed
+fi
+
 BACKGROUND=
 BORDER=
 DPI=
@@ -90,8 +109,8 @@ function generate {
     local TMPDIR
     local SUFFIX
 
-    TMPDIR="$(mktemp -d)"
-    TEXFILE="$(mktemp -p $TMPDIR tXXX.tex)"
+    TMPDIR="$("$MKTEMP" -d)"
+    TEXFILE="$("$MKTEMP" -p $TMPDIR tXXX.tex)"
 
     if [ "$ENVIRONMENT" = '$' ] || [ "$ENVIRONMENT" = '$$' ]; then
         BEGINENV=$ENVIRONMENT
@@ -139,7 +158,7 @@ function generate {
     fi
 
     if [ ! "$PNGFILE" ]; then
-        PNGFILE="$(mktemp -p $PWD fXXX.png)"
+        PNGFILE="$("$MKTEMP" -p $PWD fXXX.png)"
     fi
 
     dvipng -bg $BACKGROUND -D $DPI -fg $FOREGROUND -o $PNGFILE -q --strict -T tight ${TEXFILE%.tex}.dvi \
@@ -155,7 +174,7 @@ function generate {
     fi
 
     if [ $SILENT -eq 0 ]; then
-        readlink -f $PNGFILE
+        $READLINK -f $PNGFILE
     fi
 
     clean
@@ -234,7 +253,7 @@ function main {
     if [ -z "$SIZE" ]; then
 	SIZE=11
     else
-	SIZE=$(echo $SIZE | sed 's/pt//')
+	SIZE=$(echo $SIZE | $SED 's/pt//')
 
 	if ! match "$SIZE" '^[1-9][0-9]*$'; then
 	    echo "Invalid font size." >&2
@@ -362,7 +381,7 @@ function properties {
 		    PADDING=$VALUE
 		;;
 		SIZE)
-                    SIZE=$(echo $VALUE | sed 's/pt//')
+                    SIZE=$(echo $VALUE | $SED 's/pt//')
 		;;
 	    esac
 	done < $PROPERTIES
@@ -375,8 +394,8 @@ function properties {
 # @return echoes the scaled dimension string.
 function scale {
     local BASEDPI=$(dpi)
-    local WIDTH=$(($(echo $1 | sed -r 's/x.*//') * $DPI / $BASEDPI))
-    local HEIGHT=$(($(echo $1 | sed -r 's/.*x//') * $DPI / $BASEDPI))
+    local WIDTH=$(($(echo $1 | $SED -r 's/x.*//') * $DPI / $BASEDPI))
+    local HEIGHT=$(($(echo $1 | $SED -r 's/.*x//') * $DPI / $BASEDPI))
 
     echo ${WIDTH}x${HEIGHT}
 }
