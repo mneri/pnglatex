@@ -16,7 +16,7 @@ Download or clone the repository, then type
 ## Dependencies
 `pnglatex` depends on `dvipng`, `imagemagick`, `latex` and `optipng` packages.
 
-`gcoreutils` required on darwin
+`gcoreutils`, `gnu-sed` required on darwin
 ## Tips
 You can pipe into `pnglatex`:
 

@@ -22,8 +22,9 @@ has_cmd() {
 
 MKTEMP=$(command -v mktemp)
 READLINK=$(command -v readlink)
+SED=$(command -v sed)
 if [ "$(uname)" == "Darwin" ]; then
-	for cmd in gmktemp greadlink; do
+	for cmd in gmktemp greadlink gsed; do
 		if ! has_cmd "$cmd"; then
 			echo ":: This test requires the ${cmd} executable."
 			exit 1
@@ -31,6 +32,7 @@ if [ "$(uname)" == "Darwin" ]; then
 	done
 	MKTEMP=gmktemp
 	READLINK=greadlink
+	SED=gsed
 fi
 
 BACKGROUND=
@@ -251,7 +253,7 @@ function main {
     if [ -z "$SIZE" ]; then
 	SIZE=11
     else
-	SIZE=$(echo $SIZE | sed 's/pt//')
+	SIZE=$(echo $SIZE | $SED 's/pt//')
 
 	if ! match "$SIZE" '^[1-9][0-9]*$'; then
 	    echo "Invalid font size." >&2
@@ -379,7 +381,7 @@ function properties {
 		    PADDING=$VALUE
 		;;
 		SIZE)
-                    SIZE=$(echo $VALUE | sed 's/pt//')
+                    SIZE=$(echo $VALUE | $SED 's/pt//')
 		;;
 	    esac
 	done < $PROPERTIES
@@ -392,8 +394,8 @@ function properties {
 # @return echoes the scaled dimension string.
 function scale {
     local BASEDPI=$(dpi)
-    local WIDTH=$(($(echo $1 | sed -r 's/x.*//') * $DPI / $BASEDPI))
-    local HEIGHT=$(($(echo $1 | sed -r 's/.*x//') * $DPI / $BASEDPI))
+    local WIDTH=$(($(echo $1 | $SED -r 's/x.*//') * $DPI / $BASEDPI))
+    local HEIGHT=$(($(echo $1 | $SED -r 's/.*x//') * $DPI / $BASEDPI))
 
     echo ${WIDTH}x${HEIGHT}
 }
