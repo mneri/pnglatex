@@ -10,8 +10,7 @@ formulas into png images.
 ## Installation
 Download or clone the repository, then type
 
-    # chmod +x pnglatex
-    # cp pnglatex /usr/bin/pnglatex
+    $ sudo install -m 0755 pnglatex /usr/bin/pnglatex
 
 ## Dependencies
 `pnglatex` depends on `dvipng`, `imagemagick`, `latex` and `optipng` packages.
@@ -98,8 +97,7 @@ replace the formula with the generated image.
 ## Installation
 Download or clone the repository, then type
 
-    # chmod +x cliptex
-    # cp cliptex /usr/bin/cliptex
+    $ sudo install -m 0755 cliptex /usr/bin/cliptex
 
 ## Dependencies
 `cliptex` depends on `pnglatex`, [`wl-clipboard`](https://github.com/bugaevc/wl-clipboard) and `xclip`.
