@@ -32,6 +32,7 @@ PADDING=
 PNGFILE=
 SHOWVERSION=0
 SILENT=0
+TOSTDOUT=0
 SIZE=
 TEXFILE=
 declare -r VERSION=0.13
@@ -138,7 +139,10 @@ function generate {
         exit 1
     fi
 
-    if [ ! "$PNGFILE" ]; then
+    if [ -z "$PNGFILE" ] || [ "$PNGFILE" = '-' ]; then
+        if [ "$PNGFILE" = '-' ]; then
+            TOSTDOUT=1
+        fi
         PNGFILE="$(mktemp -p $PWD fXXX.png)"
     fi
 
@@ -154,8 +158,12 @@ function generate {
         optimize
     fi
 
-    if [ $SILENT -eq 0 ]; then
+    if [ $SILENT -eq 0 ] && [ $TOSTDOUT -eq 0 ]; then
         readlink -f $PNGFILE
+    fi
+
+    if [ "$TOSTDOUT" -eq 1 ]; then
+        cat "$PNGFILE" && rm "$PNGFILE"
     fi
 
     clean
